@@ -19,6 +19,11 @@ export default defineConfig({
   build: {
     target: "esnext"
   },
+  esbuild: {
+    supported: {
+      'top-level-await': true
+    },
+  },
   optimizeDeps: {
     // Explicitly include fast-glob, since it gets dynamically imported and we
     // don't want that to cause a re-bundle.
