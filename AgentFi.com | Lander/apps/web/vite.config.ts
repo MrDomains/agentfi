@@ -44,6 +44,15 @@ export default defineConfig({
     ],
   },
   logLevel: 'info',
+  build: {
+    target: 'es2022',
+  },
+  ssr: {
+    target: 'node18',
+  },
+  esbuild: {
+    target: 'es2022',
+  },
   plugins: [
     nextPublicProcessEnv(),
     restartEnvFileChange(),
