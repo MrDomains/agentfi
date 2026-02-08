@@ -35,10 +35,10 @@ for (const method of ['log', 'info', 'warn', 'error', 'debug'] as const) {
   };
 }
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-const adapter = NeonAdapter(pool);
+const pool = process.env.DATABASE_URL
+  ? new Pool({ connectionString: process.env.DATABASE_URL })
+  : null;
+const adapter = pool ? NeonAdapter(pool) : null;
 
 const app = new Hono();
 
@@ -149,6 +149,10 @@ if (process.env.AUTH_SECRET) {
             }
 
             // logic to verify if user exists
+            if (!adapter) {
+              console.error('DATABASE_URL not set; auth is disabled.');
+              return null;
+            }
             const user = await adapter.getUserByEmail(email);
             if (!user) {
               return null;
@@ -195,6 +199,10 @@ if (process.env.AUTH_SECRET) {
             }
 
             // logic to verify if user exists
+            if (!adapter) {
+              console.error('DATABASE_URL not set; auth is disabled.');
+              return null;
+            }
             const user = await adapter.getUserByEmail(email);
             if (!user) {
               const newUser = await adapter.createUser({
