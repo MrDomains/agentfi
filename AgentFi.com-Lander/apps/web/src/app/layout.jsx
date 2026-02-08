@@ -48,31 +48,6 @@ export default function RootLayout({ children }) {
     simpleAnalytics.src = "https://scripts.simpleanalyticscdn.com/latest.js";
     document.head.appendChild(simpleAnalytics);
 
-    // Remove any existing favicons
-    const existingLinks = document.querySelectorAll('link[rel*="icon"]');
-    existingLinks.forEach((link) => link.remove());
-
-    // Add primary favicon (PNG)
-    const favicon = document.createElement("link");
-    favicon.rel = "icon";
-    favicon.type = "image/png";
-    favicon.href =
-      "https://raw.createusercontent.com/bb2c19a1-029e-45e0-a87d-2c5aef50f81c/";
-    document.head.appendChild(favicon);
-
-    // Add shortcut icon for better compatibility
-    const shortcutIcon = document.createElement("link");
-    shortcutIcon.rel = "shortcut icon";
-    shortcutIcon.type = "image/png";
-    shortcutIcon.href =
-      "https://raw.createusercontent.com/bb2c19a1-029e-45e0-a87d-2c5aef50f81c/";
-    document.head.appendChild(shortcutIcon);
-
-    const appleTouchIcon = document.createElement("link");
-    appleTouchIcon.rel = "apple-touch-icon";
-    appleTouchIcon.href =
-      "https://raw.createusercontent.com/bb2c19a1-029e-45e0-a87d-2c5aef50f81c/";
-    document.head.appendChild(appleTouchIcon);
   }, []);
 
   return (
