@@ -460,6 +460,11 @@ export function Layout({ children }: { children: ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>AgentFi.com | The Infrastructure of Autonomous Finance</title>
+        <meta
+          name="description"
+          content="The definitive category domain for the Agentic Economy. Secure the digital asset that defines the future of AI driven capital. Strategic acquisition inquiries only."
+        />
         <Meta />
         <Links />
         <script type="module" src="/src/__create/dev-error-overlay.js"></script>

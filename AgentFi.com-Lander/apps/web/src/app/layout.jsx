@@ -14,22 +14,6 @@ const queryClient = new QueryClient({
 
 export default function RootLayout({ children }) {
   useEffect(() => {
-    // Set page title and metadata
-    document.title = "AgentFi.com | The Infrastructure of Autonomous Finance";
-
-    // Remove existing meta description if it exists
-    const existingMeta = document.querySelector('meta[name="description"]');
-    if (existingMeta) {
-      existingMeta.remove();
-    }
-
-    // Add meta description
-    const metaDescription = document.createElement("meta");
-    metaDescription.name = "description";
-    metaDescription.content =
-      "The definitive category domain for the Agentic Economy. Secure the digital asset that defines the future of AI driven capital. Strategic acquisition inquiries only.";
-    document.head.appendChild(metaDescription);
-
     // Microsoft Clarity
     const clarityScript = document.createElement("script");
     clarityScript.type = "text/javascript";
