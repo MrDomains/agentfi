@@ -37,7 +37,7 @@ export default function ComingSoonPage() {
             className="font-inter font-normal text-xl sm:text-2xl md:text-3xl text-white/90 mb-4 sm:mb-5 opacity-0 animate-fadeInUp leading-relaxed"
             style={{ animationDelay: "0.3s" }}
           >
-            The Infrastructure of Autonomous Finance.
+            The Infrastructure of Autonomous Finance
           </p>
 
           {/* Sub-tagline */}
