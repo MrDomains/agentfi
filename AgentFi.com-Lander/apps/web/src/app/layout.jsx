@@ -13,11 +13,20 @@ const queryClient = new QueryClient({
 });
 
 const GA_MEASUREMENT_ID = "G-EKBDNXXR4K";
+const CLARITY_ID = "vcu19du9ls";
 
 export default function RootLayout({ children }) {
   useEffect(() => {
     let cancelled = false;
     const injectedScripts = [];
+
+    const cleanupScripts = () => {
+      injectedScripts.forEach((script) => {
+        if (script?.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      });
+    };
 
     const appendScript = ({
       src,
@@ -31,9 +40,9 @@ export default function RootLayout({ children }) {
       const script = document.createElement("script");
 
       if (src) script.src = src;
-      script.async = async;
+      if (async) script.async = true;
       if (defer) script.defer = true;
-      if (innerHTML) script.innerHTML = innerHTML;
+      if (innerHTML) script.text = innerHTML;
 
       Object.entries(attrs).forEach(([key, value]) => {
         script.setAttribute(key, value);
@@ -44,95 +53,125 @@ export default function RootLayout({ children }) {
       return script;
     };
 
+    const disableGoogleAnalytics = () => {
+      window[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
+    };
+
+    const disableClarity = () => {
+      window.clarity = function () {};
+    };
+
+    const disableSimpleAnalytics = () => {
+      window.sa_event = function () {};
+    };
+
+    const disableAllAnalytics = () => {
+      disableGoogleAnalytics();
+      disableClarity();
+      disableSimpleAnalytics();
+    };
+
     const loadAnalytics = () => {
       if (cancelled) return;
-      if (document.querySelector('script[data-analytics-block="clarity"]')) return;
 
-      // Microsoft Clarity bootstrap
+      if (document.querySelector('script[data-analytics="ga-loader"]')) {
+        return;
+      }
+
       appendScript({
         innerHTML: `
           (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "vcu19du9ls");
+          })(window, document, "clarity", "script", "${CLARITY_ID}");
         `,
         attrs: {
-          "data-analytics-block": "clarity",
+          "data-analytics": "clarity",
         },
       });
 
-      // Google Analytics loader
       appendScript({
         src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
         async: true,
         attrs: {
-          "data-analytics-block": "ga-loader",
+          "data-analytics": "ga-loader",
         },
       });
 
-      // Google Analytics init
       appendScript({
         innerHTML: `
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
-          window.gtag = window.gtag || gtag;
+          window.gtag = gtag;
           gtag('js', new Date());
           gtag('config', '${GA_MEASUREMENT_ID}', {
             anonymize_ip: true
           });
         `,
         attrs: {
-          "data-analytics-block": "ga-init",
+          "data-analytics": "ga-init",
         },
       });
 
-      // Simple Analytics
       appendScript({
         src: "https://scripts.simpleanalyticscdn.com/latest.js",
         async: true,
         defer: true,
         attrs: {
-          "data-analytics-block": "simple-analytics",
+          "data-analytics": "simple-analytics",
           "data-collect-dnt": "true",
         },
       });
     };
 
-    const disableGoogleAnalyticsAsSafeguard = () => {
-      window[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
-    };
+    const initAnalytics = async () => {
+      try {
+        disableAllAnalytics();
 
-    const detectGreekVisitorFromDocument = () => {
-      const htmlCountry =
-        document.documentElement.getAttribute("data-country") ||
-        document.documentElement.dataset.country;
-
-      return htmlCountry === "GR";
-    };
-
-    if (detectGreekVisitorFromDocument()) {
-      disableGoogleAnalyticsAsSafeguard();
-      console.log("[AgentFi.com] Analytics suppressed for Greece visitor.");
-      return () => {
-        cancelled = true;
-        injectedScripts.forEach((script) => {
-          if (script.parentNode) {
-            script.parentNode.removeChild(script);
-          }
+        const res = await fetch("/api/geo", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          cache: "no-store",
         });
-      };
-    }
 
-    loadAnalytics();
+        if (!res.ok) {
+          throw new Error(`Geo endpoint failed with status ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (cancelled) return;
+
+        if (
+          data?.country === "GR" ||
+          data?.isGreekVisitor === true ||
+          data?.analyticsAllowed === false
+        ) {
+          console.log("[AgentFi.com] Analytics suppressed for Greece visitor.");
+          return;
+        }
+
+        window[`ga-disable-${GA_MEASUREMENT_ID}`] = false;
+        loadAnalytics();
+      } catch (error) {
+        if (cancelled) return;
+
+        disableAllAnalytics();
+        console.warn(
+          "[AgentFi.com] Geo check failed. Analytics kept disabled as a safe fallback.",
+          error
+        );
+      }
+    };
+
+    initAnalytics();
 
     return () => {
       cancelled = true;
-      injectedScripts.forEach((script) => {
-        if (script.parentNode) {
-          script.parentNode.removeChild(script);
-        }
-      });
+      cleanupScripts();
     };
   }, []);
 
