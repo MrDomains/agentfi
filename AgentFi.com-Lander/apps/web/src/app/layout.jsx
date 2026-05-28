@@ -12,6 +12,8 @@ const queryClient = new QueryClient({
   },
 });
 
+const GA_MEASUREMENT_ID = "G-EKBDNXXR4K";
+
 export default function RootLayout({ children }) {
   useEffect(() => {
     let cancelled = false;
@@ -24,6 +26,8 @@ export default function RootLayout({ children }) {
       innerHTML,
       attrs = {},
     }) => {
+      if (cancelled) return null;
+
       const script = document.createElement("script");
 
       if (src) script.src = src;
@@ -42,8 +46,9 @@ export default function RootLayout({ children }) {
 
     const loadAnalytics = () => {
       if (cancelled) return;
+      if (document.querySelector('script[data-analytics-block="clarity"]')) return;
 
-      // Microsoft Clarity
+      // Microsoft Clarity bootstrap
       appendScript({
         innerHTML: `
           (function(c,l,a,r,i,t,y){
@@ -52,14 +57,18 @@ export default function RootLayout({ children }) {
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
           })(window, document, "clarity", "script", "vcu19du9ls");
         `,
-        attrs: { "data-analytics": "clarity" },
+        attrs: {
+          "data-analytics-block": "clarity",
+        },
       });
 
       // Google Analytics loader
       appendScript({
-        src: "https://www.googletagmanager.com/gtag/js?id=G-EKBDNXXR4K",
+        src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
         async: true,
-        attrs: { "data-analytics": "ga-loader" },
+        attrs: {
+          "data-analytics-block": "ga-loader",
+        },
       });
 
       // Google Analytics init
@@ -67,10 +76,15 @@ export default function RootLayout({ children }) {
         innerHTML: `
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
+          window.gtag = window.gtag || gtag;
           gtag('js', new Date());
-          gtag('config', 'G-EKBDNXXR4K');
+          gtag('config', '${GA_MEASUREMENT_ID}', {
+            anonymize_ip: true
+          });
         `,
-        attrs: { "data-analytics": "ga-init" },
+        attrs: {
+          "data-analytics-block": "ga-init",
+        },
       });
 
       // Simple Analytics
@@ -79,44 +93,38 @@ export default function RootLayout({ children }) {
         async: true,
         defer: true,
         attrs: {
-          "data-analytics": "simple-analytics",
+          "data-analytics-block": "simple-analytics",
           "data-collect-dnt": "true",
         },
       });
     };
 
-    const initAnalytics = async () => {
-      try {
-        const res = await fetch("/api/geo", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error(`Geo endpoint failed with status ${res.status}`);
-        }
-
-        const data = await res.json();
-
-        if (cancelled) return;
-
-        if (data?.isGreekVisitor === true || data?.country === "GR") {
-          console.log("[AgentFi.com] Analytics suppressed for Greece visitor.");
-          return;
-        }
-
-        loadAnalytics();
-      } catch (error) {
-        if (cancelled) return;
-
-        console.warn("[AgentFi.com] Geo check failed, loading analytics fallback.", error);
-        loadAnalytics();
-      }
+    const disableGoogleAnalyticsAsSafeguard = () => {
+      window[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
     };
 
-    initAnalytics();
+    const detectGreekVisitorFromDocument = () => {
+      const htmlCountry =
+        document.documentElement.getAttribute("data-country") ||
+        document.documentElement.dataset.country;
+
+      return htmlCountry === "GR";
+    };
+
+    if (detectGreekVisitorFromDocument()) {
+      disableGoogleAnalyticsAsSafeguard();
+      console.log("[AgentFi.com] Analytics suppressed for Greece visitor.");
+      return () => {
+        cancelled = true;
+        injectedScripts.forEach((script) => {
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+        });
+      };
+    }
+
+    loadAnalytics();
 
     return () => {
       cancelled = true;
