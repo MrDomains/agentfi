@@ -20,14 +20,6 @@ export default function RootLayout({ children }) {
     let cancelled = false;
     const injectedScripts = [];
 
-    const cleanupScripts = () => {
-      injectedScripts.forEach((script) => {
-        if (script?.parentNode) {
-          script.parentNode.removeChild(script);
-        }
-      });
-    };
-
     const appendScript = ({
       src,
       async = true,
@@ -53,10 +45,6 @@ export default function RootLayout({ children }) {
       return script;
     };
 
-    const disableGoogleAnalytics = () => {
-      window[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
-    };
-
     const loadAnalytics = () => {
       if (cancelled) return;
 
@@ -64,10 +52,8 @@ export default function RootLayout({ children }) {
         return;
       }
 
-      // Re-enable GA before loading it
       window[`ga-disable-${GA_MEASUREMENT_ID}`] = false;
 
-      // Microsoft Clarity
       appendScript({
         innerHTML: `
           (function(c,l,a,r,i,t,y){
@@ -76,21 +62,15 @@ export default function RootLayout({ children }) {
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
           })(window, document, "clarity", "script", "${CLARITY_ID}");
         `,
-        attrs: {
-          "data-analytics": "clarity",
-        },
+        attrs: { "data-analytics": "clarity" },
       });
 
-      // Google Analytics loader
       appendScript({
         src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
         async: true,
-        attrs: {
-          "data-analytics": "ga-loader",
-        },
+        attrs: { "data-analytics": "ga-loader" },
       });
 
-      // Google Analytics init
       appendScript({
         innerHTML: `
           window.dataLayer = window.dataLayer || [];
@@ -101,12 +81,9 @@ export default function RootLayout({ children }) {
             anonymize_ip: true
           });
         `,
-        attrs: {
-          "data-analytics": "ga-init",
-        },
+        attrs: { "data-analytics": "ga-init" },
       });
 
-      // Simple Analytics
       appendScript({
         src: "https://scripts.simpleanalyticscdn.com/latest.js",
         async: true,
@@ -118,10 +95,17 @@ export default function RootLayout({ children }) {
       });
     };
 
+    const cleanupScripts = () => {
+      injectedScripts.forEach((script) => {
+        if (script?.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      });
+    };
+
     const initAnalytics = async () => {
       try {
         const res = await fetch("/api/geo", {
-          method: "GET",
           headers: {
             Accept: "application/json",
           },
@@ -137,7 +121,7 @@ export default function RootLayout({ children }) {
         if (cancelled) return;
 
         if (data?.country === "GR" || data?.isGreekVisitor === true) {
-          disableGoogleAnalytics();
+          window[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
           console.log("[AgentFi.com] Analytics suppressed for Greece visitor.");
           return;
         }
@@ -147,7 +131,7 @@ export default function RootLayout({ children }) {
         if (cancelled) return;
 
         console.warn(
-          "[AgentFi.com] Geo check failed. Analytics allowed as fail-open fallback.",
+          "[AgentFi.com] Geo check failed. Analytics allowed as fallback.",
           error
         );
 
