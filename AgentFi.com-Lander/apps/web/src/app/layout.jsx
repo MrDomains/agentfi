@@ -15,59 +15,94 @@ const queryClient = new QueryClient({
 export default function RootLayout({ children }) {
   useEffect(() => {
     let cancelled = false;
+    const injectedScripts = [];
+
+    const appendScript = ({
+      src,
+      async = true,
+      defer = false,
+      innerHTML,
+      attrs = {},
+    }) => {
+      const script = document.createElement("script");
+
+      if (src) script.src = src;
+      script.async = async;
+      if (defer) script.defer = true;
+      if (innerHTML) script.innerHTML = innerHTML;
+
+      Object.entries(attrs).forEach(([key, value]) => {
+        script.setAttribute(key, value);
+      });
+
+      document.head.appendChild(script);
+      injectedScripts.push(script);
+      return script;
+    };
 
     const loadAnalytics = () => {
       if (cancelled) return;
 
       // Microsoft Clarity
-      const clarityScript = document.createElement("script");
-      clarityScript.type = "text/javascript";
-      clarityScript.setAttribute("data-analytics", "clarity");
-      clarityScript.innerHTML = `
-        (function(c,l,a,r,i,t,y){
+      appendScript({
+        innerHTML: `
+          (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "vcu19du9ls");
-      `;
-      document.head.appendChild(clarityScript);
+          })(window, document, "clarity", "script", "vcu19du9ls");
+        `,
+        attrs: { "data-analytics": "clarity" },
+      });
 
-      // Google Analytics - gtag script
-      const gtagScript = document.createElement("script");
-      gtagScript.async = true;
-      gtagScript.src = "https://www.googletagmanager.com/gtag/js?id=G-EKBDNXXR4K";
-      gtagScript.setAttribute("data-analytics", "ga-script");
-      document.head.appendChild(gtagScript);
+      // Google Analytics loader
+      appendScript({
+        src: "https://www.googletagmanager.com/gtag/js?id=G-EKBDNXXR4K",
+        async: true,
+        attrs: { "data-analytics": "ga-loader" },
+      });
 
-      // Google Analytics - initialization
-      const gtagInit = document.createElement("script");
-      gtagInit.setAttribute("data-analytics", "ga-init");
-      gtagInit.innerHTML = `
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-EKBDNXXR4K');
-      `;
-      document.head.appendChild(gtagInit);
+      // Google Analytics init
+      appendScript({
+        innerHTML: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-EKBDNXXR4K');
+        `,
+        attrs: { "data-analytics": "ga-init" },
+      });
 
       // Simple Analytics
-      const simpleAnalytics = document.createElement("script");
-      simpleAnalytics.async = true;
-      simpleAnalytics.defer = true;
-      simpleAnalytics.src = "https://scripts.simpleanalyticscdn.com/latest.js";
-      simpleAnalytics.setAttribute("data-analytics", "simple-analytics");
-      simpleAnalytics.setAttribute("data-collect-dnt", "true");
-      document.head.appendChild(simpleAnalytics);
+      appendScript({
+        src: "https://scripts.simpleanalyticscdn.com/latest.js",
+        async: true,
+        defer: true,
+        attrs: {
+          "data-analytics": "simple-analytics",
+          "data-collect-dnt": "true",
+        },
+      });
     };
 
     const initAnalytics = async () => {
       try {
-        const res = await fetch("https://ipapi.co/json/");
+        const res = await fetch("/api/geo", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`Geo endpoint failed with status ${res.status}`);
+        }
+
         const data = await res.json();
 
         if (cancelled) return;
 
-        if (data?.country_code === "GR") {
+        if (data?.isGreekVisitor === true || data?.country === "GR") {
           console.log("[AgentFi.com] Analytics suppressed for Greece visitor.");
           return;
         }
@@ -76,7 +111,7 @@ export default function RootLayout({ children }) {
       } catch (error) {
         if (cancelled) return;
 
-        // Safe fallback: if geo lookup fails, load analytics normally
+        console.warn("[AgentFi.com] Geo check failed, loading analytics fallback.", error);
         loadAnalytics();
       }
     };
@@ -85,6 +120,11 @@ export default function RootLayout({ children }) {
 
     return () => {
       cancelled = true;
+      injectedScripts.forEach((script) => {
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      });
     };
   }, []);
 
