@@ -57,20 +57,6 @@ export default function RootLayout({ children }) {
       window[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
     };
 
-    const disableClarity = () => {
-      window.clarity = function () {};
-    };
-
-    const disableSimpleAnalytics = () => {
-      window.sa_event = function () {};
-    };
-
-    const disableAllAnalytics = () => {
-      disableGoogleAnalytics();
-      disableClarity();
-      disableSimpleAnalytics();
-    };
-
     const loadAnalytics = () => {
       if (cancelled) return;
 
@@ -78,6 +64,10 @@ export default function RootLayout({ children }) {
         return;
       }
 
+      // Re-enable GA before loading it
+      window[`ga-disable-${GA_MEASUREMENT_ID}`] = false;
+
+      // Microsoft Clarity
       appendScript({
         innerHTML: `
           (function(c,l,a,r,i,t,y){
@@ -91,6 +81,7 @@ export default function RootLayout({ children }) {
         },
       });
 
+      // Google Analytics loader
       appendScript({
         src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
         async: true,
@@ -99,6 +90,7 @@ export default function RootLayout({ children }) {
         },
       });
 
+      // Google Analytics init
       appendScript({
         innerHTML: `
           window.dataLayer = window.dataLayer || [];
@@ -114,6 +106,7 @@ export default function RootLayout({ children }) {
         },
       });
 
+      // Simple Analytics
       appendScript({
         src: "https://scripts.simpleanalyticscdn.com/latest.js",
         async: true,
@@ -127,8 +120,6 @@ export default function RootLayout({ children }) {
 
     const initAnalytics = async () => {
       try {
-        disableAllAnalytics();
-
         const res = await fetch("/api/geo", {
           method: "GET",
           headers: {
@@ -145,25 +136,22 @@ export default function RootLayout({ children }) {
 
         if (cancelled) return;
 
-        if (
-          data?.country === "GR" ||
-          data?.isGreekVisitor === true ||
-          data?.analyticsAllowed === false
-        ) {
+        if (data?.country === "GR" || data?.isGreekVisitor === true) {
+          disableGoogleAnalytics();
           console.log("[AgentFi.com] Analytics suppressed for Greece visitor.");
           return;
         }
 
-        window[`ga-disable-${GA_MEASUREMENT_ID}`] = false;
         loadAnalytics();
       } catch (error) {
         if (cancelled) return;
 
-        disableAllAnalytics();
         console.warn(
-          "[AgentFi.com] Geo check failed. Analytics kept disabled as a safe fallback.",
+          "[AgentFi.com] Geo check failed. Analytics allowed as fail-open fallback.",
           error
         );
+
+        loadAnalytics();
       }
     };
 
