@@ -28,8 +28,9 @@ export default function ComingSoonPage() {
         <div className="w-full max-w-3xl text-center">
           {/* Brand name */}
           <h1 className="font-inter font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white mb-6 sm:mb-8 tracking-[-0.02em] opacity-0 animate-fadeInUp">
-            <span className="text-white">AgentFi</span>
-            <span className="text-[#00D69F]">.com</span>
+            <span className="text-[#00D69F]">AgentFi</span>
+            <span className="text-white">.com</span>
+            
           </h1>
 
           {/* Tagline */}
