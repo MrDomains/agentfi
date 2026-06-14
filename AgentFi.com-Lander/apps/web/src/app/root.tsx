@@ -469,9 +469,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta property="og:site_name" content="AgentFi.com" />
         <meta property="og:title" content="AgentFi.com | The Infrastructure of Autonomous Finance" />
         <meta property="og:description" content="The definitive category domain for the Agentic Economy. Secure the digital asset that defines the future of AI driven capital. Strategic acquisition inquiries only." />
-        <meta property="og:url" content="https://agentfi.com" />
+        <meta property="og:url" content="https://AgentFi.com" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://agentfi.com/android-chrome-512x512.png" />
+        <meta property="og:image" content="https://AgentFi.com/android-chrome-512x512.png" />
         <meta property="og:image:width" content="512" />
         <meta property="og:image:height" content="512" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
