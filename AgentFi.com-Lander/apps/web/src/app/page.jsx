@@ -2,7 +2,6 @@
 
 import React, { useMemo } from "react";
 
-// Πλούσια, ρεαλιστικά δεδομένα AI Agents στο οικοσύστημα του AgentFi
 const FAKE_TRANSACTIONS = [
   { chain: "ETH", job_type: "LIQUIDITY_ALLOC", agent_from: "Treasury_Core", agent_to: "Curve_Fi_Pool", amount: 25400000.00 },
   { chain: "BASE", job_type: "MEV_CAPTURE", agent_from: "Seeker_0x9A", agent_to: "Vault_v3", amount: 482500.50 },
@@ -37,24 +36,17 @@ const FAKE_TRANSACTIONS = [
 ];
 
 function formatAmount(n) {
-  // Χρησιμοποιούμε parseFloat για να αφαιρέσουμε τα περιττά μηδενικά (π.χ. το 50.0K γίνεται 50K)
   if (n >= 1000000000) return '$' + parseFloat((n / 1000000000).toFixed(2)) + 'B';
   if (n >= 1000000) return '$' + parseFloat((n / 1000000).toFixed(2)) + 'M';
   if (n >= 1000) return '$' + parseFloat((n / 1000).toFixed(1)) + 'K';
   return '$' + parseFloat(n.toFixed(2));
 }
 
-// Η ταχύτητα άλλαξε από 150s σε 300s για να πηγαίνει πιο αργά και ομαλά.
-// Αφαιρέθηκε το hover pause.
-const CSS =
-  '@keyframes tk{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-50%,0,0)}}' +
-  '.tk-track{display:flex;width:max-content;animation:tk 300s linear infinite;will-change:transform;transform:translateZ(0);backface-visibility:hidden;perspective:1000px;-webkit-font-smoothing:antialiased;}';
-
 function TickerItem({ tx }) {
   const amount = formatAmount(tx.amount);
 
   return (
-    <div className="inline-flex items-center gap-2 mx-6 px-3 py-1 rounded hover:bg-white/5 transition-colors shrink-0 cursor-default">
+    <div className="inline-flex items-center gap-3 pr-8 shrink-0 cursor-default">
       <span className="text-[8px] font-black px-1.5 py-0.5 rounded border text-white/60 border-white/20 bg-white/5">
         {tx.chain}
       </span>
@@ -71,6 +63,8 @@ function TickerItem({ tx }) {
       <span className="text-[13px] font-bold text-[#00D69F]">
         {amount}
       </span>
+      {/* Διακριτικό separator για καλύτερη αναγνωσιμότητα */}
+      <span className="text-white/10 ml-4 text-[10px]">•</span>
     </div>
   );
 }
@@ -81,19 +75,19 @@ export default function ComingSoonPage() {
       "mailto:inquiry@agentfi.com?subject=AgentFi.com%20%7C%20Confidential%20Acquisition%20Request";
   };
 
-  // Διπλασιάζουμε το array για το infinite scroll
+  // Μόνο x2 για σωστό και αποδοτικό CSS Translate Loop
   const tickerItems = useMemo(() => {
-    return [...FAKE_TRANSACTIONS, ...FAKE_TRANSACTIONS, ...FAKE_TRANSACTIONS, ...FAKE_TRANSACTIONS];
+    return [...FAKE_TRANSACTIONS, ...FAKE_TRANSACTIONS];
   }, []);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden flex flex-col">
-      <style dangerouslySetInnerHTML={{ __html: CSS }} />
-
-      {/* TOP TICKER - Full Width */}
-      <div className="w-full h-11 border-b border-[#00D69F]/10 overflow-hidden flex items-center relative select-none z-50 bg-[#0A0A0A]">
-        
-        {/* Κυλιόμενο Ticker Track */}
+      
+      {/* TOP TICKER - Full Width (aria-hidden added for screen readers) */}
+      <div 
+        className="w-full h-11 border-b border-[#00D69F]/10 overflow-hidden flex items-center relative select-none z-50 bg-[#0A0A0A] shrink-0"
+        aria-hidden="true"
+      >
         <div className="flex-1 overflow-hidden tk-wrap w-full">
           <div className="tk-track items-center whitespace-nowrap font-mono">
             {tickerItems.map((tx, i) => (
@@ -102,13 +96,13 @@ export default function ComingSoonPage() {
           </div>
         </div>
 
-        {/* Gradient fades για ομαλό σβήσιμο στις άκρες (Full Width) */}
+        {/* Gradient fades για ομαλό σβήσιμο στις άκρες */}
         <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent z-20 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent z-20 pointer-events-none" />
       </div>
 
-      {/* Animated gradient background - subtle green variations */}
-      <div className="absolute inset-0 opacity-25 pointer-events-none z-0 mt-11">
+      {/* Animated gradient background - (Αφαιρέθηκε το mt-11, το αφήνουμε να κάτσει από κάτω) */}
+      <div className="absolute inset-0 opacity-25 pointer-events-none z-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#00D69F] rounded-full mix-blend-screen filter blur-[128px] animate-[pulse_6s_ease-in-out_infinite]"></div>
         <div
           className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#00B885] rounded-full mix-blend-screen filter blur-[128px] animate-[pulse_6s_ease-in-out_infinite]"
@@ -178,6 +172,7 @@ export default function ComingSoonPage() {
         </div>
       </footer>
 
+      {/* Ενιαίο Style Block με όλες τις διορθώσεις */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -199,6 +194,23 @@ export default function ComingSoonPage() {
         
         .animate-fadeInUp {
           animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        /* Ticker Animation (150s για ιδανική ταχύτητα) */
+        @keyframes tk {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
+        }
+        
+        .tk-track {
+          display: flex;
+          width: max-content;
+          animation: tk 150s linear infinite;
+          will-change: transform;
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000px;
+          -webkit-font-smoothing: antialiased;
         }
       `}</style>
     </div>
