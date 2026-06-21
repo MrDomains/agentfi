@@ -19,7 +19,6 @@ export default function ComingSoonPage() {
       "mailto:inquiry@agentfi.com?subject=AgentFi.com%20%7C%20Confidential%20Acquisition%20Request";
   };
 
-  // === NEW BACKGROUND LOGIC ===
   const canvasRef = useRef(null);
   const [transactions, setTransactions] = useState([]);
   const transactionIndexRef = useRef(0);
@@ -41,7 +40,6 @@ export default function ComingSoonPage() {
     window.addEventListener("resize", resizeCanvas);
 
     const particles = [];
-
     const particleCount = Math.min(110, Math.floor((window.innerWidth * window.innerHeight) / 20000));
 
     for (let i = 0; i < particleCount; i++) {
@@ -112,9 +110,15 @@ export default function ComingSoonPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Class για τα transaction cards (για να μην σπάει το string)
+  const transactionCardClass =
+    "absolute px-4 py-1.5 rounded-lg text-[10px] font-mono tracking-[0.5px] " +
+    "bg-black/70 border border-[#00D69F]/35 text-[#00D69F]/95 " +
+    "shadow-[0_0_14px_rgba(0,214,159,0.18)] backdrop-blur-md " +
+    "animate-[fadeInOut_5.3s_ease-in-out_forwards]";
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden flex flex-col">
-      
       {/* Canvas Particles Background */}
       <canvas
         ref={canvasRef}
@@ -127,10 +131,7 @@ export default function ComingSoonPage() {
         {transactions.map((tx) => (
           <div
             key={tx.id}
-            className="absolute px-4 py-1.5 rounded-lg text-[10px] font-mono tracking-[0.5px] 
-                       bg-black/70 border border-[#00D69F]/35 text-[#00D69F]/95 
-                       shadow-[0_0_14px_rgba(0,214,159,0.18)] backdrop-blur-md
-                       animate-[fadeInOut_5.3s_ease-in-out_forwards]"
+            className={transactionCardClass}
             style={{
               left: `${tx.x}%`,
               top: `${tx.y}%`,
@@ -145,13 +146,11 @@ export default function ComingSoonPage() {
       {/* Main content */}
       <main className="flex-1 flex items-center justify-center px-6 sm:px-8 relative z-20">
         <div className="w-full max-w-3xl text-center">
-          {/* Brand name */}
           <h1 className="font-inter font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white mb-6 sm:mb-8 tracking-[-0.02em] opacity-0 animate-fadeInUp">
             <span className="text-[#00D69F]">AgentFi</span>
             <span className="text-white">.com</span>
           </h1>
 
-          {/* Tagline */}
           <p
             className="font-inter font-normal text-xl sm:text-2xl md:text-3xl text-white/90 mb-4 sm:mb-5 opacity-0 animate-fadeInUp leading-relaxed"
             style={{ animationDelay: "0.3s" }}
@@ -159,7 +158,6 @@ export default function ComingSoonPage() {
             The Infrastructure of Autonomous Finance
           </p>
 
-          {/* Sub-tagline */}
           <p
             className="font-inter font-light text-sm sm:text-base text-white/50 mb-12 sm:mb-16 opacity-0 animate-fadeInUp italic"
             style={{ animationDelay: "0.5s" }}
@@ -167,7 +165,6 @@ export default function ComingSoonPage() {
             Institutional acquisition only. Pricing available upon qualified inquiry.
           </p>
 
-          {/* CTA Section */}
           <div className="opacity-0 animate-fadeInUp" style={{ animationDelay: "0.7s" }}>
             <button
               onClick={handleInquiry}
@@ -183,7 +180,6 @@ export default function ComingSoonPage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="relative z-20 py-12 px-6 opacity-0 animate-fadeInUp" style={{ animationDelay: "0.9s" }}>
         <div className="flex flex-col items-center justify-center">
           <span className="font-inter text-[10px] uppercase tracking-[0.2em] text-white/20 font-medium text-center">
@@ -201,14 +197,8 @@ export default function ComingSoonPage() {
         }
 
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         .animate-fadeInUp {
