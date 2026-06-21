@@ -2,29 +2,51 @@
 
 import React, { useMemo } from "react";
 
-// Υποθετικά δεδομένα (Institutional Level) για το Ticker
+// Πλούσια, ρεαλιστικά δεδομένα AI Agents στο οικοσύστημα του AgentFi
 const FAKE_TRANSACTIONS = [
   { chain: "ETH", job_type: "LIQUIDITY_ALLOC", agent_from: "Treasury_Core", agent_to: "Curve_Fi_Pool", amount: 25400000.00, time: "12s" },
   { chain: "BASE", job_type: "MEV_CAPTURE", agent_from: "Seeker_0x9A", agent_to: "Vault_v3", amount: 482500.50, time: "14s" },
-  { chain: "SOL", job_type: "ARBITRAGE", agent_from: "Arb_Node_7", agent_to: "Jupiter_Agg", amount: 1250000.00, time: "21s" },
+  { chain: "SOL", job_type: "INTENT_EXECUTION", agent_from: "Intent_Solver_1", agent_to: "Jupiter_Agg", amount: 1250000.00, time: "21s" },
   { chain: "ARB", job_type: "YIELD_HARVEST", agent_from: "Strat_Engine", agent_to: "Aave_V3", amount: 8400500.00, time: "35s" },
   { chain: "OP", job_type: "CROSS_CHAIN", agent_from: "Bridge_Agent", agent_to: "Base_Relay", amount: 15500000.00, time: "42s" },
-  { chain: "ETH", job_type: "FLASH_LOAN", agent_from: "Liq_Provider", agent_to: "Exec_Contract", amount: 100000000.00, time: "55s" },
+  { chain: "ETH", job_type: "FLASH_LOAN", agent_from: "Liq_Provider", agent_to: "Exec_Contract", amount: 150000000.00, time: "55s" },
   { chain: "BASE", job_type: "AUTO_STAKE", agent_from: "Agent_0x44", agent_to: "Lido_Fi", amount: 3200000.25, time: "1m" },
-  { chain: "SOL", job_type: "STAKE_REWARD", agent_from: "Validator_AI", agent_to: "Treasury_Core", amount: 850000.00, time: "2m" },
-  { chain: "ETH", job_type: "REBALANCE", agent_from: "Risk_Manager", agent_to: "Maker_DAO", amount: 12000000.00, time: "3m" },
-  { chain: "BASE", job_type: "INFERENCE", agent_from: "Model_Orchestrator", agent_to: "Compute_Node", amount: 15420.00, time: "3m" },
+  { chain: "SOL", job_type: "LIQUIDATION_EXEC", agent_from: "Keeper_Node_8", agent_to: "Mango_Markets", amount: 940500.00, time: "1m" },
+  { chain: "ETH", job_type: "PREDICTIVE_SWAP", agent_from: "Alpha_Bot_v2", agent_to: "Uniswap_V3", amount: 12400000.00, time: "2m" },
+  { chain: "AVAX", job_type: "SMART_ROUTING", agent_from: "Router_AI", agent_to: "Trader_Joe", amount: 5100000.00, time: "2m" },
+  { chain: "ARB", job_type: "PORTFOLIO_REBAL", agent_from: "Risk_Manager", agent_to: "Maker_DAO", amount: 45000000.00, time: "3m" },
+  { chain: "ETH", job_type: "SENTIMENT_TRADE", agent_from: "Social_Oracle", agent_to: "1inch_Router", amount: 2800000.00, time: "3m" },
+  { chain: "BASE", job_type: "INFERENCE", agent_from: "Model_Orchestrator", agent_to: "Compute_Node", amount: 15420.00, time: "4m" },
+  { chain: "SOL", job_type: "YIELD_OPTIMIZE", agent_from: "Vault_Manager", agent_to: "Kamino_Fi", amount: 4500000.00, time: "4m" },
+  { chain: "OP", job_type: "AUTO_COMPOUND", agent_from: "Compounder_v2", agent_to: "Velodrome", amount: 880000.00, time: "5m" },
+  { chain: "ETH", job_type: "RISK_HEDGE", agent_from: "Delta_Neutral_Bot", agent_to: "Deribit_Sync", amount: 18500000.00, time: "5m" },
+  { chain: "MATIC", job_type: "DATA_ORACLE", agent_from: "Price_Feeder", agent_to: "Aave_Oracle", amount: 4500.00, time: "6m" },
+  { chain: "BASE", job_type: "MEV_PROTECTION", agent_from: "Shield_Agent", agent_to: "Private_Mempool", amount: 350000.00, time: "6m" },
+  { chain: "SOL", job_type: "ARBITRAGE", agent_from: "Arb_Node_7", agent_to: "Raydium_Pool", amount: 620000.00, time: "7m" },
+  { chain: "ETH", job_type: "DEBT_REFINANCE", agent_from: "Credit_Manager", agent_to: "Compound_V3", amount: 9200000.00, time: "8m" },
+  { chain: "ARB", job_type: "TOKEN_BUYBACK", agent_from: "DAO_Treasury_Bot", agent_to: "Camelot_DEX", amount: 1500000.00, time: "8m" },
+  { chain: "ETH", job_type: "GOVERNANCE_VOTE", agent_from: "Gov_Agent_0x", agent_to: "Snapshot_Relay", amount: 50000.00, time: "9m" },
+  { chain: "BASE", job_type: "LIQUIDITY_PROV", agent_from: "Market_Maker_AI", agent_to: "Aerodrome", amount: 7300000.00, time: "10m" },
+  { chain: "SOL", job_type: "FLASH_LOAN", agent_from: "Liq_Sniper", agent_to: "Solend", amount: 55000000.00, time: "11m" },
+  { chain: "OP", job_type: "FEE_COLLECTION", agent_from: "Protocol_Keeper", agent_to: "Treasury_Core", amount: 245000.00, time: "12m" },
+  { chain: "ETH", job_type: "INTENT_EXECUTION", agent_from: "Solver_Network", agent_to: "Cow_Swap", amount: 33400000.00, time: "14m" },
+  { chain: "BASE", job_type: "SMART_ROUTING", agent_from: "Pathfinder_AI", agent_to: "Base_Swap", amount: 1120000.00, time: "15m" },
+  { chain: "AVAX", job_type: "YIELD_HARVEST", agent_from: "Strat_Engine_X", agent_to: "Benqi", amount: 2900000.00, time: "16m" },
+  { chain: "ETH", job_type: "MEV_CAPTURE", agent_from: "Seeker_Prime", agent_to: "Builder_0x66", amount: 890500.00, time: "18m" },
+  { chain: "ARB", job_type: "LIQUIDITY_ALLOC", agent_from: "Treasury_Core", agent_to: "GMX_Vault", amount: 18500000.00, time: "20m" }
 ];
 
 function formatAmount(n) {
+  if (n >= 1000000000) return '$' + (n / 1000000000).toFixed(2) + 'B';
   if (n >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
   if (n >= 1000) return '$' + (n / 1000).toFixed(1) + 'K';
   return '$' + n.toFixed(2);
 }
 
+// Αυξήσαμε τον χρόνο στα 150s επειδή το array είναι πολύ μεγαλύτερο τώρα
 const CSS =
   '@keyframes tk{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-50%,0,0)}}' +
-  '.tk-track{display:flex;width:max-content;animation:tk 60s linear infinite;will-change:transform;transform:translateZ(0);backface-visibility:hidden;perspective:1000px;-webkit-font-smoothing:antialiased;}' +
+  '.tk-track{display:flex;width:max-content;animation:tk 150s linear infinite;will-change:transform;transform:translateZ(0);backface-visibility:hidden;perspective:1000px;-webkit-font-smoothing:antialiased;}' +
   '@media (hover: hover) and (pointer: fine) { .tk-wrap:hover .tk-track{animation-play-state:paused!important;} }';
 
 function TickerItem({ tx }) {
@@ -34,7 +56,7 @@ function TickerItem({ tx }) {
     <a
       href="#"
       onClick={(e) => e.preventDefault()}
-      className="inline-flex items-center gap-2 mx-5 px-3 py-1 rounded hover:bg-white/5 transition-colors shrink-0 group/item cursor-default"
+      className="inline-flex items-center gap-2 mx-6 px-3 py-1 rounded hover:bg-white/5 transition-colors shrink-0 group/item cursor-default"
     >
       <span className="text-[8px] font-black px-1.5 py-0.5 rounded border text-white/60 border-white/20 bg-white/5">
         {tx.chain}
@@ -55,7 +77,7 @@ function TickerItem({ tx }) {
       <span className="text-slate-600 text-[10px]">
         {tx.time}
       </span>
-      {/* Inline SVG for ExternalLink to avoid missing lucide-react dependency */}
+      {/* Inline SVG για το ExternalLink εικονίδιο */}
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#00D69F] opacity-0 group-hover/item:opacity-100 transition-opacity">
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
         <polyline points="15 3 21 3 21 9"></polyline>
@@ -71,7 +93,7 @@ export default function ComingSoonPage() {
       "mailto:inquiry@agentfi.com?subject=AgentFi.com%20%7C%20Confidential%20Acquisition%20Request";
   };
 
-  // Διπλασιάζουμε το array για το infinite scroll (όπως ακριβώς το είχες)
+  // Διπλασιάζουμε το array για το infinite scroll
   const tickerItems = useMemo(() => {
     return [...FAKE_TRANSACTIONS, ...FAKE_TRANSACTIONS, ...FAKE_TRANSACTIONS, ...FAKE_TRANSACTIONS];
   }, []);
@@ -80,23 +102,11 @@ export default function ComingSoonPage() {
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden flex flex-col">
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
-      {/* TOP TICKER - Θεσμικό στυλ βασισμένο στο agentfi.news */}
+      {/* TOP TICKER - Full Width, No Static Left Block */}
       <div className="w-full h-11 border-b border-[#00D69F]/10 overflow-hidden flex items-center relative select-none z-50 bg-[#0A0A0A]">
         
-        {/* Αριστερό σταθερό μπλοκ (A2A NETWORK LIVE) */}
-        <div className="flex absolute left-0 top-0 bottom-0 z-30 items-center gap-1.5 md:gap-2 px-2 md:px-4 bg-[#0A0A0A] border-r border-[#00D69F]/10">
-          <span className="relative flex h-1.5 w-1.5 md:h-2 md:w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00D69F] opacity-75" />
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-[#00D69F]" />
-          </span>
-          <span className="text-[9px] md:text-[10px] font-black text-white tracking-widest whitespace-nowrap">
-            <span className="inline md:hidden">A2A LIVE</span>
-            <span className="hidden md:inline">A2A NETWORK LIVE</span>
-          </span>
-        </div>
-
-        {/* Κυλιόμενο Ticker Track */}
-        <div className="flex-1 overflow-hidden ml-[75px] md:ml-[172px] tk-wrap">
+        {/* Κυλιόμενο Ticker Track - Αφαιρέθηκε το margin left */}
+        <div className="flex-1 overflow-hidden tk-wrap w-full">
           <div className="tk-track items-center whitespace-nowrap font-mono">
             {tickerItems.map((tx, i) => (
               <TickerItem key={i} tx={tx} />
@@ -104,9 +114,9 @@ export default function ComingSoonPage() {
           </div>
         </div>
 
-        {/* Gradient fades για ομαλό σβήσιμο στις άκρες (ταιριασμένα στο #0A0A0A bg) */}
-        <div className="absolute left-[75px] md:left-[172px] top-0 bottom-0 w-6 md:w-10 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-20 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-10 md:w-16 bg-gradient-to-l from-[#0A0A0A]/40 md:from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-20 pointer-events-none" />
+        {/* Gradient fades για ομαλό σβήσιμο στις άκρες (Full Width) */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent z-20 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent z-20 pointer-events-none" />
       </div>
 
       {/* Animated gradient background - subtle green variations */}
