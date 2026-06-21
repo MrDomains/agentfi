@@ -2,13 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-interface Transaction {
-  id: number;
-  text: string;
-  x: number;
-  y: number;
-}
-
 const TRANSACTION_MESSAGES = [
   "Agent #A392 • Transferred 18,420 USDC on Base",
   "Treasury Agent settled • 91,750 USDC",
@@ -27,8 +20,8 @@ export default function ComingSoonPage() {
   };
 
   // === NEW BACKGROUND LOGIC ===
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const canvasRef = useRef(null);
+  const [transactions, setTransactions] = useState([]);
   const transactionIndexRef = useRef(0);
 
   // Canvas Particles
@@ -47,14 +40,7 @@ export default function ComingSoonPage() {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    const particles: Array<{
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
-    }> = [];
+    const particles = [];
 
     const particleCount = Math.min(110, Math.floor((window.innerWidth * window.innerHeight) / 20000));
 
@@ -69,7 +55,7 @@ export default function ComingSoonPage() {
       });
     }
 
-    let animationFrame: number;
+    let animationFrame;
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -103,13 +89,13 @@ export default function ComingSoonPage() {
     };
   }, []);
 
-  // Floating Transactions (every ~2.3 seconds)
+  // Floating Transactions
   useEffect(() => {
     const interval = setInterval(() => {
       const text = TRANSACTION_MESSAGES[transactionIndexRef.current % TRANSACTION_MESSAGES.length];
       transactionIndexRef.current++;
 
-      const newTx: Transaction = {
+      const newTx = {
         id: Date.now(),
         text,
         x: Math.random() * 92 + 4,
@@ -118,7 +104,6 @@ export default function ComingSoonPage() {
 
       setTransactions((prev) => [...prev.slice(-2), newTx]);
 
-      // Remove after animation ends
       setTimeout(() => {
         setTransactions((prev) => prev.filter((t) => t.id !== newTx.id));
       }, 5300);
@@ -130,7 +115,7 @@ export default function ComingSoonPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden flex flex-col">
       
-      {/* === NEW ANIMATED BACKGROUND === */}
+      {/* Canvas Particles Background */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 z-0"
