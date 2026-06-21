@@ -1,58 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-// Λίστα με πιθανά νομίσματα και θεσμικές ενέργειες για τους agents
-const assets = ['USDC', 'ETH', 'BTC'];
-const actions = ['exec', 'rebalance', 'allocate_liquidity', 'secure_treasury'];
+// Δεδομένα για το Institutional Ticker
+const tickerData = [
+  { agent: "AGENT_0x8F", action: "EXEC_SWAP", amount: "145.50 ETH" },
+  { agent: "SYSTEM_CORE", action: "LIQUIDITY_REBALANCE", amount: "$1.2M USDC" },
+  { agent: "AGENT_0x2A", action: "MEV_CAPTURE", amount: "+4.20 SOL" },
+  { agent: "ORACLE_NODE", action: "PRICE_UPDATE", amount: "0.0005 ETH" },
+  { agent: "AGENT_0x9C", action: "TREASURY_ALLOC", amount: "$450K USDC" },
+  { agent: "CONTRACT_V3", action: "AUTO_STAKE", amount: "12,500 ARB" },
+  { agent: "AGENT_0x11", action: "CROSS_CHAIN_BRIDGE", amount: "55.00 wBTC" },
+  { agent: "ROUTER_0x4", action: "YIELD_HARVEST", amount: "$84,200 USDC" },
+];
 
-// Συνάρτηση δημιουργίας τυχαίας συναλλαγής
-const generateTransaction = (id) => {
-  const asset = assets[Math.floor(Math.random() * assets.length)];
-  const action = actions[Math.floor(Math.random() * actions.length)];
-  const amount = (Math.random() * (250000 - 1000) + 1000).toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-  
-  // Τυχαία θέση στην οθόνη (αποφεύγοντας το ακριβές κέντρο)
-  const top = Math.floor(Math.random() * 85) + 5;
-  const left = Math.floor(Math.random() * 85) + 5;
-
-  let textDisplay = '';
-  if (action === 'exec') {
-    textDisplay = `[Agent_0x${Math.floor(Math.random()*1000)}] exec: ${amount} ${asset}`;
-  } else {
-    textDisplay = `[System_Agent] ${action.toUpperCase()}: ${amount} ${asset}`;
-  }
-
-  return {
-    id,
-    text: textDisplay,
-    top: `${top}%`,
-    left: `${left}%`,
-  };
-};
+// Διπλασιάζουμε το array για να γίνει ομαλό το infinite scroll (CSS Marquee)
+const tickerItems = [...tickerData, ...tickerData, ...tickerData];
 
 export default function ComingSoonPage() {
-  const [transactions, setTransactions] = useState([]);
-
-  // Μηχανισμός που προσθέτει και αφαιρεί συναλλαγές ομαλά
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newTx = generateTransaction(Date.now());
-      setTransactions((current) => [...current, newTx]);
-
-      // Αφαίρεση της συναλλαγής μετά από 5 δευτερόλεπτα
-      setTimeout(() => {
-        setTransactions((current) => current.filter((tx) => tx.id !== newTx.id));
-      }, 5000);
-
-    }, 2000); // Κάθε 2 δευτερόλεπτα εμφανίζεται μια νέα συναλλαγή
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleInquiry = () => {
     window.location.href =
       "mailto:inquiry@agentfi.com?subject=AgentFi.com%20%7C%20Confidential%20Acquisition%20Request";
@@ -61,29 +26,23 @@ export default function ComingSoonPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden flex flex-col">
       
-      {/* 1. Subtle Dot Grid Background (ΝΕΟ - Για το Coinbase effect) */}
-      <div 
-        className="absolute inset-0 opacity-10 pointer-events-none z-0"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0, 214, 159, 0.4) 1px, transparent 0)',
-          backgroundSize: '40px 40px'
-        }}
-      />
-
-      {/* 2. Floating AI Agent Transactions (ΝΕΟ) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {transactions.map((tx) => (
-          <div
-            key={tx.id}
-            className="absolute text-[#00D69F] text-[10px] sm:text-xs font-mono tracking-widest opacity-0 animate-fadeInOutTx"
-            style={{ top: tx.top, left: tx.left }}
-          >
-            {tx.text}
-          </div>
-        ))}
+      {/* 1. TOP TICKER (Institutional Level) */}
+      <div className="absolute top-0 left-0 w-full overflow-hidden border-b border-[#00D69F]/20 bg-[#0A0A0A]/80 backdrop-blur-md z-50 py-2">
+        <div className="flex whitespace-nowrap animate-tickerScroll w-max">
+          {tickerItems.map((item, index) => (
+            <div key={index} className="flex items-center space-x-3 mx-6 font-mono text-[10px] sm:text-xs tracking-wider">
+              <span className="text-[#00D69F]/70 px-2 py-0.5 rounded bg-[#00D69F]/10 border border-[#00D69F]/20">
+                {item.agent}
+              </span>
+              <span className="text-white/60">{item.action}</span>
+              <span className="text-[#00D69F] font-semibold">{item.amount}</span>
+              <span className="text-white/20 ml-6">•</span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* 3. Animated gradient background - subtle green variations (ΤΟ ΔΙΚΟ ΣΟΥ) */}
+      {/* 2. Animated gradient background (Το αρχικό σου, χωρίς αλλαγές) */}
       <div className="absolute inset-0 opacity-25 pointer-events-none z-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#00D69F] rounded-full mix-blend-screen filter blur-[128px] animate-[pulse_6s_ease-in-out_infinite]"></div>
         <div
@@ -96,9 +55,10 @@ export default function ComingSoonPage() {
         ></div>
       </div>
 
-      {/* Main content (ΤΟ ΔΙΚΟ ΣΟΥ) */}
-      <main className="flex-1 flex items-center justify-center px-6 sm:px-8 relative z-10 pointer-events-none">
-        <div className="w-full max-w-3xl text-center pointer-events-auto">
+      {/* 3. Main content */}
+      <main className="flex-1 flex items-center justify-center px-6 sm:px-8 relative z-10">
+        <div className="w-full max-w-3xl text-center pt-10">
+          
           {/* Brand name */}
           <h1 className="font-inter font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white mb-6 sm:mb-8 tracking-[-0.02em] opacity-0 animate-fadeInUp">
             <span className="text-[#00D69F]">AgentFi</span>
@@ -134,7 +94,7 @@ export default function ComingSoonPage() {
               Confidential Inquiry
             </button>
 
-            {/* Discretion notice - subtle and elegant */}
+            {/* Discretion notice */}
             <p className="font-inter text-[10px] sm:text-xs text-white/25 mt-6 sm:mt-8 font-light italic tracking-wide">
               All inquiries are handled with the utmost discretion.
             </p>
@@ -142,12 +102,12 @@ export default function ComingSoonPage() {
         </div>
       </main>
 
-      {/* Footer (ΤΟ ΔΙΚΟ ΣΟΥ) */}
+      {/* Footer */}
       <footer
-        className="relative z-10 py-12 px-6 opacity-0 animate-fadeInUp pointer-events-none"
+        className="relative z-10 py-12 px-6 opacity-0 animate-fadeInUp"
         style={{ animationDelay: "0.9s" }}
       >
-        <div className="flex flex-col items-center justify-center pointer-events-auto">
+        <div className="flex flex-col items-center justify-center">
           <span className="font-inter text-[10px] uppercase tracking-[0.2em] text-white/20 font-medium text-center">
             AGENTFI.COM © 2026
           </span>
@@ -177,16 +137,23 @@ export default function ComingSoonPage() {
           animation: fadeInUp 0.8s ease-out forwards;
         }
 
-        /* ΝΕΟ: Animation για τις συναλλαγές στο background */
-        @keyframes fadeInOutTx {
-          0% { opacity: 0; transform: translateY(10px); }
-          15% { opacity: 0.25; transform: translateY(0); }
-          85% { opacity: 0.25; transform: translateY(0); }
-          100% { opacity: 0; transform: translateY(-10px); }
+        /* Ticker Animation */
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-33.333333%); /* Μετακίνηση κατά το 1/3 επειδή διπλασιάσαμε τα δεδομένα x3 */
+          }
         }
         
-        .animate-fadeInOutTx {
-          animation: fadeInOutTx 5s ease-in-out forwards;
+        .animate-tickerScroll {
+          animation: scroll 25s linear infinite;
+        }
+        
+        /* Pause on hover (Προαιρετικό αλλά δίνει ωραία αίσθηση) */
+        .animate-tickerScroll:hover {
+          animation-play-state: paused;
         }
       `}</style>
     </div>
