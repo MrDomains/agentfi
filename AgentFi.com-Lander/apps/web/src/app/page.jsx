@@ -36,11 +36,11 @@ const FAKE_TRANSACTIONS = [
 ];
 
 function formatAmount(n) {
-  // Institutional Formatting: Πλήρης αριθμός με κόμματα και 2 δεκαδικά (π.χ. $45,000,000.00)
-  return '$' + n.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  // Institutional Compact Formatting με σταθερά 2 δεκαδικά ψηφία (Bloomberg style)
+  if (n >= 1000000000) return '$' + (n / 1000000000).toFixed(2) + 'B';
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
+  if (n >= 1000) return '$' + (n / 1000).toFixed(2) + 'K';
+  return '$' + n.toFixed(2);
 }
 
 function TickerItem({ tx }) {
@@ -64,7 +64,7 @@ function TickerItem({ tx }) {
       <span className="text-[13px] font-bold text-[#00D69F]">
         {amount}
       </span>
-      {/* Διακριτικό separator για καλύτερη αναγνωσιμότητα */}
+      {/* Διακριτικό separator για καλύτερη αναγνωσιμότητα ανάμεσα στα transactions */}
       <span className="text-white/10 ml-4 text-[10px]">•</span>
     </div>
   );
@@ -132,12 +132,12 @@ export default function ComingSoonPage() {
             The Infrastructure of Autonomous Finance
           </p>
 
-          {/* Sub-tagline με διορθωμένο spacing στην τελεία */}
+          {/* Sub-tagline με φυσικό και σφιχτό spacing στην τελεία (mx-0.5) */}
           <p
             className="font-inter font-light text-sm sm:text-base text-white/50 mb-12 sm:mb-16 opacity-0 animate-fadeInUp italic"
             style={{ animationDelay: "0.5s" }}
           >
-            Institutional acquisition only <span className="mx-1 text-white/30">•</span> Pricing available upon qualified inquiry.
+            Institutional acquisition only <span className="mx-0.5 text-white/30">•</span> Pricing available upon qualified inquiry
           </p>
 
           {/* CTA Section */}
@@ -172,7 +172,7 @@ export default function ComingSoonPage() {
         </div>
       </footer>
 
-      {/* Ενιαίο Style Block με όλες τις διορθώσεις */}
+      {/* Ενιαίο Style Block */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
