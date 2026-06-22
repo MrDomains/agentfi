@@ -86,7 +86,7 @@ export default function ComingSoonPage() {
       
       {/* TOP TICKER - Full Width (aria-hidden added for screen readers) */}
       <div 
-        className="w-full h-11 border-b border-[#00D69F]/10 overflow-hidden flex items-center relative select-none z-50 bg-[#0A0A0A] shrink-0"
+        className="w-full h-11 overflow-hidden flex items-center relative select-none z-50 bg-[#0E0E0E] shrink-0"
         aria-hidden="true"
       >
         <div className="flex-1 overflow-hidden tk-wrap w-full">
@@ -97,9 +97,9 @@ export default function ComingSoonPage() {
           </div>
         </div>
 
-        {/* Gradient fades για ομαλό σβήσιμο στις άκρες */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent z-20 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent z-20 pointer-events-none" />
+        {/* Gradient fades για ομαλό σβήσιμο στις άκρες - προσαρμοσμένα στο #0E0E0E */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#0E0E0E] via-[#0E0E0E]/90 to-transparent z-20 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#0E0E0E] via-[#0E0E0E]/90 to-transparent z-20 pointer-events-none" />
       </div>
 
       {/* Animated gradient background */}
