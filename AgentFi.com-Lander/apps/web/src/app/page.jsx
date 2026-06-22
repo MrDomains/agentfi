@@ -136,8 +136,7 @@ export default function ComingSoonPage() {
             className="font-inter font-light text-sm sm:text-base text-white/50 mb-12 sm:mb-16 opacity-0 animate-fadeInUp italic"
             style={{ animationDelay: "0.5s" }}
           >
-            Institutional acquisition only <span className="text-white/10 ml-4 text-[10px]">•</span> Pricing available upon qualified
-            inquiry
+            Institutional acquisition only. Pricing available upon qualified inquiry.
           </p>
 
           {/* CTA Section */}
