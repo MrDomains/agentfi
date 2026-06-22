@@ -154,7 +154,7 @@ export default function ComingSoonPage() {
 
             {/* Discretion notice */}
             <p className="font-inter text-[10px] sm:text-xs text-white/25 mt-6 sm:mt-8 font-light italic tracking-wide">
-              All inquiries are handled with the utmost discretion.
+              All inquiries are handled with the utmost discretion
             </p>
           </div>
         </div>
