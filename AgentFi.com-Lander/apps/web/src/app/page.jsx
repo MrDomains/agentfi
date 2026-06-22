@@ -36,10 +36,11 @@ const FAKE_TRANSACTIONS = [
 ];
 
 function formatAmount(n) {
-  if (n >= 1000000000) return '$' + parseFloat((n / 1000000000).toFixed(2)) + 'B';
-  if (n >= 1000000) return '$' + parseFloat((n / 1000000).toFixed(2)) + 'M';
-  if (n >= 1000) return '$' + parseFloat((n / 1000).toFixed(1)) + 'K';
-  return '$' + parseFloat(n.toFixed(2));
+  // Institutional Formatting: Πλήρης αριθμός με κόμματα και 2 δεκαδικά (π.χ. $45,000,000.00)
+  return '$' + n.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 function TickerItem({ tx }) {
@@ -101,7 +102,7 @@ export default function ComingSoonPage() {
         <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent z-20 pointer-events-none" />
       </div>
 
-      {/* Animated gradient background - (Αφαιρέθηκε το mt-11, το αφήνουμε να κάτσει από κάτω) */}
+      {/* Animated gradient background */}
       <div className="absolute inset-0 opacity-25 pointer-events-none z-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#00D69F] rounded-full mix-blend-screen filter blur-[128px] animate-[pulse_6s_ease-in-out_infinite]"></div>
         <div
@@ -131,12 +132,12 @@ export default function ComingSoonPage() {
             The Infrastructure of Autonomous Finance
           </p>
 
-          {/* Sub-tagline */}
+          {/* Sub-tagline με διορθωμένο spacing στην τελεία */}
           <p
             className="font-inter font-light text-sm sm:text-base text-white/50 mb-12 sm:mb-16 opacity-0 animate-fadeInUp italic"
             style={{ animationDelay: "0.5s" }}
           >
-            Institutional acquisition only <span className="mx-3 text-white/20">•</span> Pricing available upon qualified inquiry
+            Institutional acquisition only <span className="mx-1 text-white/30">•</span> Pricing available upon qualified inquiry.
           </p>
 
           {/* CTA Section */}
@@ -195,7 +196,7 @@ export default function ComingSoonPage() {
           animation: fadeInUp 0.8s ease-out forwards;
         }
 
-        /* Ticker Animation (150s για ιδανική ταχύτητα) */
+        /* Ticker Animation (150s) */
         @keyframes tk {
           0% { transform: translate3d(0, 0, 0); }
           100% { transform: translate3d(-50%, 0, 0); }
