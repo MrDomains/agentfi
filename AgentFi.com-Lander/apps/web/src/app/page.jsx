@@ -73,7 +73,7 @@ function TickerItem({ tx }) {
 export default function ComingSoonPage() {
   const handleInquiry = () => {
     window.location.href =
-      "mailto:inquiry@agentfi.com?subject=AgentFi.com%20%7C%20Confidential%20Acquisition%20Request";
+      "mailto:hq@agentfi.com?subject=AgentFi.com%20%7C%20Confidential%20Acquisition%20Request";
   };
 
   // Μόνο x2 για σωστό και αποδοτικό CSS Translate Loop
