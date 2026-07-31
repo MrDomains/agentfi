@@ -224,7 +224,7 @@
       }
 
       .form-success.is-visible {
-        display: block;
+        display: flex;
       }
 
       .inquiry-form.is-hidden {
@@ -312,10 +312,11 @@
           
           <!-- Logo Area (Left) -->
           <div class="flex-1 flex justify-start">
-            <a href="#top" class="flex items-center gap-3 sm:gap-4" aria-label="AgentFi.com home">
-              <span class="font-serif-display text-lg sm:text-2xl leading-none tracking-[-0.02em]">
-                <span class="text-white">AgentFi</span><span class="italic font-light text-accent">.com</span>
-              </span>
+            <a href="#top" class="flex items-center gap-2 sm:gap-3" aria-label="AgentFi.com home">
+              <!-- Square Icon Logo -->
+              <img src="/logo.png" alt="AgentFi Icon" class="h-6 w-6 sm:h-7 sm:w-7 object-contain" />
+              <!-- Text Logo -->
+              <span class="font-serif-display text-2xl sm:text-3xl text-white tracking-tight">AgentFi<span class="text-accent italic">.com</span></span>
             </a>
           </div>
 
@@ -465,10 +466,10 @@
           <!-- Inquiry card -->
           <div id="inquire" class="scroll-mt-24 reveal reveal-lg" style="--reveal-delay: 520ms" data-reveal="hero">
             <div
-              class="bg-[#050A08] p-8 rounded-xl border border-white/[0.08] shadow-[0_0_50px_rgba(16,229,141,0.12)]"
+              class="bg-[#050A08] p-8 rounded-xl border border-white/[0.08] shadow-[0_0_50px_rgba(16,229,141,0.12)] min-h-[520px] flex flex-col"
             >
               <div class="flex flex-col items-center text-center mb-6">
-                <div class="flex items-center gap-4 mb-4 w-full justify-center">
+                <div class="flex items-center gap-4 mb-5 w-full justify-center">
                   <span class="w-6 sm:w-8 h-px bg-white/20" aria-hidden="true"></span>
                   <span
                     class="text-[9px] sm:text-[10px] uppercase tracking-[0.28em] font-semibold text-white/60 whitespace-nowrap"
@@ -476,12 +477,14 @@
                   >
                   <span class="w-6 sm:w-8 h-px bg-white/20" aria-hidden="true"></span>
                 </div>
-                <h3 class="font-serif-display text-[2.5rem] leading-[1.05] text-white">AgentFi.com</h3>
+                
+                <!-- Text Logo Only (No Icon Here) -->
+                <span class="font-serif-display text-3xl sm:text-4xl text-white tracking-tight">AgentFi<span class="text-white/60">.com</span></span>
               </div>
 
               <div class="h-px bg-white/[0.06] mb-6"></div>
 
-              <div id="form-success" class="form-success text-center py-6" role="status" aria-live="polite">
+              <div id="form-success" class="form-success flex-col items-center justify-center flex-grow text-center py-6 w-full" role="status" aria-live="polite">
                 <p class="font-serif-display text-2xl text-white mb-2">Inquiry received.</p>
                 <p class="text-white/60 text-sm font-light leading-relaxed">
                   Thank you. A private response will follow within 24 hours.
@@ -495,7 +498,7 @@
                 </button>
               </div>
 
-              <form id="inquiry-form" class="inquiry-form space-y-4" novalidate>
+              <form id="inquiry-form" class="inquiry-form space-y-4 flex-grow" novalidate>
                 
                 <!-- Honeypot -->
                 <div style="display:none;" aria-hidden="true">
@@ -774,10 +777,11 @@
       <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-10">
         <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 mb-16">
           <div class="reveal lg:col-span-6" style="--reveal-delay: 0ms">
-            <div class="flex items-center gap-4 mb-5">
-              <h2 class="font-serif-display text-xl leading-none tracking-[-0.01em]">
-                <span class="text-white">AgentFi</span><span class="italic font-light text-accent">.com</span>
-              </h2>
+            <div class="flex items-center gap-2 sm:gap-3 mb-6">
+              <!-- Square Icon Logo -->
+              <img src="/logo.png" alt="AgentFi Icon" class="h-6 w-6 sm:h-7 sm:w-7 object-contain" />
+              <!-- Text Logo -->
+              <span class="font-serif-display text-2xl sm:text-3xl text-white tracking-tight">AgentFi<span class="text-accent italic">.com</span></span>
             </div>
             <p
               class="font-serif-body text-[15px] md:text-base font-light leading-[1.65] text-white/60 max-w-lg mb-6"
