@@ -24,12 +24,11 @@
     <meta name="twitter:title" content="AgentFi.com | The Infrastructure of Autonomous Finance" />
 
     <!-- Favicons -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-EKBDNXXR4K"></script>
@@ -225,7 +224,7 @@
       }
 
       .form-success.is-visible {
-        display: flex;
+        display: block;
       }
 
       .inquiry-form.is-hidden {
@@ -313,11 +312,10 @@
           
           <!-- Logo Area (Left) -->
           <div class="flex-1 flex justify-start">
-            <a href="#top" class="flex items-center gap-2 sm:gap-3" aria-label="AgentFi.com home">
-              <!-- Square Icon Logo -->
-              <img src="logo.png" alt="AgentFi Icon" class="h-6 w-6 sm:h-7 sm:w-7 object-contain" />
-              <!-- Text Logo -->
-              <span class="font-serif-display text-2xl sm:text-3xl text-white tracking-tight">AgentFi<span class="text-accent italic">.com</span></span>
+            <a href="#top" class="flex items-center gap-3 sm:gap-4" aria-label="AgentFi.com home">
+              <span class="font-serif-display text-lg sm:text-2xl leading-none tracking-[-0.02em]">
+                <span class="text-white">AgentFi</span><span class="italic font-light text-accent">.com</span>
+              </span>
             </a>
           </div>
 
@@ -430,7 +428,7 @@
               style="--reveal-delay: 220ms"
               data-reveal="hero"
             >
-              The Infrastructure of Autonomous Finance
+              Institutional Grade Asset
             </p>
             <h1
               id="hero-title"
@@ -441,7 +439,7 @@
               "
               data-reveal="hero"
             >
-              <span class="block italic text-white/90">Acquire </span>
+              <span class="block italic text-white/90">Own </span>
               <span class="gradient-text-premium pb-[0.1em]">AgentFi.com</span>
             </h1>
             <p
@@ -467,10 +465,10 @@
           <!-- Inquiry card -->
           <div id="inquire" class="scroll-mt-24 reveal reveal-lg" style="--reveal-delay: 520ms" data-reveal="hero">
             <div
-              class="bg-[#050A08] p-8 rounded-xl border border-white/[0.08] shadow-[0_0_50px_rgba(16,229,141,0.12)] min-h-[520px] flex flex-col"
+              class="bg-[#050A08] p-8 rounded-xl border border-white/[0.08] shadow-[0_0_50px_rgba(16,229,141,0.12)]"
             >
               <div class="flex flex-col items-center text-center mb-6">
-                <div class="flex items-center gap-4 mb-5 w-full justify-center">
+                <div class="flex items-center gap-4 mb-4 w-full justify-center">
                   <span class="w-6 sm:w-8 h-px bg-white/20" aria-hidden="true"></span>
                   <span
                     class="text-[9px] sm:text-[10px] uppercase tracking-[0.28em] font-semibold text-white/60 whitespace-nowrap"
@@ -478,14 +476,12 @@
                   >
                   <span class="w-6 sm:w-8 h-px bg-white/20" aria-hidden="true"></span>
                 </div>
-                
-                <!-- Text Logo Only -->
-                <span class="font-serif-display text-3xl sm:text-4xl text-white tracking-tight">AgentFi<span class="text-white/60">.com</span></span>
+                <h3 class="font-serif-display text-[2.5rem] leading-[1.05] text-white">AgentFi.com</h3>
               </div>
 
               <div class="h-px bg-white/[0.06] mb-6"></div>
 
-              <div id="form-success" class="form-success flex-col items-center justify-center flex-grow text-center py-6 w-full" role="status" aria-live="polite">
+              <div id="form-success" class="form-success text-center py-6" role="status" aria-live="polite">
                 <p class="font-serif-display text-2xl text-white mb-2">Inquiry received.</p>
                 <p class="text-white/60 text-sm font-light leading-relaxed">
                   Thank you. A private response will follow within 24 hours.
@@ -499,7 +495,7 @@
                 </button>
               </div>
 
-              <form id="inquiry-form" class="inquiry-form space-y-4 flex-grow" novalidate>
+              <form id="inquiry-form" class="inquiry-form space-y-4" novalidate>
                 
                 <!-- Honeypot -->
                 <div style="display:none;" aria-hidden="true">
@@ -556,7 +552,7 @@
 
                 <div>
                   <label for="message" class="block text-sm font-medium text-muted mb-2"
-                    >Inquiry Details *</label
+                    >Acquisition Inquiry *</label
                   >
                   <textarea
                     id="message"
@@ -624,7 +620,9 @@
             </div>
             <div class="reveal px-0 md:pl-8 md:pr-4" style="--reveal-delay: 270ms">
               <svg class="w-6 h-6 text-accent mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5 2.2 5 5 5 5 5-2.2 5-5-2.2-5-5-5c-2.8 0-5 2.2-5 5s-2.2 5-5 5-5-2.2-5-5Z"/>
+                <path d="M6 3h12l4 6-10 13L2 9z"/>
+                <path d="M11 3 8 9l4 13 4-13-3-6"/>
+                <path d="M2 9h20"/>
               </svg>
               <div class="text-white font-medium text-[15px] mb-1.5 tracking-tight">Clean Provenance</div>
               <div class="text-muted text-[13px] leading-snug">
@@ -745,7 +743,7 @@
                 <span class="gradient-text-premium pb-[0.05em]"> AgentFi.com </span>
                 <span class="italic">yours.</span>
               </h2>
-              <p class="text-white/60 text-lg font-light">One conversation. No obligation.</p>
+              <p class="text-white/60 text-lg font-light">Private acquisition only.</p>
             </div>
             <a
               href="#inquire"
@@ -778,11 +776,10 @@
       <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-10">
         <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 mb-16">
           <div class="reveal lg:col-span-6" style="--reveal-delay: 0ms">
-            <div class="flex items-center gap-2 sm:gap-3 mb-6">
-              <!-- Square Icon Logo -->
-              <img src="logo.png" alt="AgentFi Icon" class="h-6 w-6 sm:h-7 sm:w-7 object-contain" />
-              <!-- Text Logo -->
-              <span class="font-serif-display text-2xl sm:text-3xl text-white tracking-tight">AgentFi<span class="text-accent italic">.com</span></span>
+            <div class="flex items-center gap-4 mb-5">
+              <h2 class="font-serif-display text-xl leading-none tracking-[-0.01em]">
+                <span class="text-white">AgentFi</span><span class="italic font-light text-accent">.com</span>
+              </h2>
             </div>
             <p
               class="font-serif-body text-[15px] md:text-base font-light leading-[1.65] text-white/60 max-w-lg mb-6"
