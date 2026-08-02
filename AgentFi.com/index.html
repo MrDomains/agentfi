@@ -405,19 +405,22 @@
 
         </div>
       </div>
-
-      <!-- Mobile Menu Overlay -->
-      <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
-        <nav class="flex flex-col items-center gap-10" aria-label="Mobile">
-          <a href="#value" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Value</a>
-          <a href="#thesis" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Thesis</a>
-          <a href="#inquire" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Inquire</a>
-          <div class="mt-6 px-4 py-2 rounded border border-white/10 text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">
-            Private Sale
-          </div>
-        </nav>
-      </div>
     </nav>
+
+    <!-- Mobile Menu Overlay (moved outside <nav> on purpose: a backdrop-filter
+         applied to an ancestor creates a new containing block for position:fixed
+         descendants, which was collapsing this overlay down to the nav's own
+         height whenever nav.is-scrolled got toggled) -->
+    <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+      <nav class="flex flex-col items-center gap-10" aria-label="Mobile">
+        <a href="#value" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Value</a>
+        <a href="#thesis" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Thesis</a>
+        <a href="#inquire" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Inquire</a>
+        <div class="mt-6 px-4 py-2 rounded border border-white/10 text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">
+          Private Sale
+        </div>
+      </nav>
+    </div>
 
     <main id="main">
       <!-- HERO -->
