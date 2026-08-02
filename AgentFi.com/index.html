@@ -203,6 +203,54 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       }
 
+      /* Mobile menu */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: rgba(0, 0, 0, 0.94);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+      }
+      .mobile-menu.is-open {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .hamburger-btn {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 28px;
+        height: 28px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        z-index: 50;
+        position: relative;
+      }
+      .hamburger-btn span {
+        display: block;
+        width: 100%;
+        height: 1.5px;
+        background: rgba(255, 255, 255, 0.85);
+        transition: all 0.3s ease;
+        border-radius: 1px;
+      }
+      .hamburger-btn.is-active span:nth-child(1) {
+        transform: translateY(6.5px) rotate(45deg);
+      }
+      .hamburger-btn.is-active span:nth-child(2) {
+        opacity: 0;
+      }
+      .hamburger-btn.is-active span:nth-child(3) {
+        transform: translateY(-6.5px) rotate(-45deg);
+      }
+
       .skip-link {
         position: absolute;
         left: -9999px;
@@ -338,14 +386,35 @@
             >
           </div>
 
-          <!-- Static Status Label (Right) -->
+          <!-- Static Status Label (Right) - Desktop -->
           <div class="hidden md:flex flex-1 justify-end items-center">
             <span class="px-3 py-1.5 rounded border border-white/10 bg-white/[0.02] text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">
               Private Sale
             </span>
           </div>
 
+          <!-- Hamburger Button (Mobile only) -->
+          <div class="flex md:hidden flex-1 justify-end items-center">
+            <button id="hamburger-btn" class="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
+
         </div>
+      </div>
+
+      <!-- Mobile Menu Overlay -->
+      <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+        <nav class="flex flex-col items-center gap-10" aria-label="Mobile">
+          <a href="#value" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Value</a>
+          <a href="#thesis" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Thesis</a>
+          <a href="#inquire" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Inquire</a>
+          <div class="mt-6 px-4 py-2 rounded border border-white/10 text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">
+            Private Sale
+          </div>
+        </nav>
       </div>
     </nav>
 
@@ -432,7 +501,7 @@
             </p>
             <h1
               id="hero-title"
-              class="reveal reveal-lg font-serif-display text-[3.75rem] sm:text-[5rem] md:text-[6.25rem] font-normal leading-[0.95] tracking-[-0.02em] mb-8"
+              class="reveal reveal-lg font-serif-display text-[3.1rem] sm:text-[4.75rem] md:text-[6.25rem] font-normal leading-[0.95] tracking-[-0.02em] mb-8"
               style="
                 text-shadow: rgba(0, 0, 0, 0.75) 0px 2px 20px, rgba(0, 0, 0, 0.55) 0px 0px 60px;
                 --reveal-delay: 340ms;
@@ -450,7 +519,7 @@
               The category defining domain for the AgentFi economy. Available exclusively for confidential private acquisition.
             </p>
             <div
-              class="reveal flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-white/50"
+              class="reveal flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.25em] text-white/50"
               style="--reveal-delay: 580ms"
               data-reveal="hero"
             >
@@ -634,7 +703,7 @@
       </section>
 
       <!-- THE ASSET THESIS -->
-      <section id="thesis" class="py-32 scroll-mt-20" aria-labelledby="thesis-title">
+      <section id="thesis" class="py-20 md:py-32 scroll-mt-20" aria-labelledby="thesis-title">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="grid md:grid-cols-12 gap-12 md:gap-20 items-start">
             <div class="reveal reveal-lg md:col-span-5 md:sticky md:top-32" style="--reveal-delay: 0ms">
@@ -686,7 +755,7 @@
       </section>
 
       <!-- STRATEGIC FIT FOR -->
-      <section class="py-24" aria-label="Strategic Fit">
+      <section class="py-16 md:py-24" aria-label="Strategic Fit">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p class="reveal text-[11px] uppercase tracking-[0.3em] text-white/40 mb-6" style="--reveal-delay: 0ms">
             Strategic Fit For
@@ -705,7 +774,7 @@
       </section>
 
       <!-- STATS -->
-      <section class="pb-28" aria-label="Domain qualities">
+      <section class="pb-20 md:pb-28" aria-label="Domain qualities">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6 text-center">
             <div class="reveal" style="--reveal-delay: 0ms">
@@ -879,6 +948,55 @@
         }
         window.addEventListener("scroll", onScroll, { passive: true });
         onScroll();
+
+        // Mobile menu
+        var hamburgerBtn = document.getElementById("hamburger-btn");
+        var mobileMenu = document.getElementById("mobile-menu");
+        var mobileLinks = document.querySelectorAll(".mobile-nav-link");
+
+        function closeMobileMenu() {
+          if (!hamburgerBtn || !mobileMenu) return;
+          hamburgerBtn.classList.remove("is-active");
+          hamburgerBtn.setAttribute("aria-expanded", "false");
+          hamburgerBtn.setAttribute("aria-label", "Open menu");
+          mobileMenu.classList.remove("is-open");
+          mobileMenu.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+          // Let the scroll handler decide the nav background state
+          if (typeof onScroll === "function") onScroll();
+        }
+
+        function openMobileMenu() {
+          if (!hamburgerBtn || !mobileMenu) return;
+          hamburgerBtn.classList.add("is-active");
+          hamburgerBtn.setAttribute("aria-expanded", "true");
+          hamburgerBtn.setAttribute("aria-label", "Close menu");
+          mobileMenu.classList.add("is-open");
+          mobileMenu.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+          if (nav) nav.classList.add("is-scrolled");
+        }
+
+        if (hamburgerBtn && mobileMenu) {
+          hamburgerBtn.addEventListener("click", function () {
+            if (mobileMenu.classList.contains("is-open")) {
+              closeMobileMenu();
+            } else {
+              openMobileMenu();
+            }
+          });
+
+          mobileLinks.forEach(function (link) {
+            link.addEventListener("click", closeMobileMenu);
+          });
+
+          // Close on Escape
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) {
+              closeMobileMenu();
+            }
+          });
+        }
 
         // Year
         var yearEl = document.getElementById("year");
