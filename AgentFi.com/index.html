@@ -407,10 +407,7 @@
       </div>
     </nav>
 
-    <!-- Mobile Menu Overlay (moved outside <nav> on purpose: a backdrop-filter
-         applied to an ancestor creates a new containing block for position:fixed
-         descendants, which was collapsing this overlay down to the nav's own
-         height whenever nav.is-scrolled got toggled) -->
+    <!-- Mobile Menu Overlay -->
     <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
       <nav class="flex flex-col items-center gap-10" aria-label="Mobile">
         <a href="#value" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Value</a>
@@ -758,27 +755,23 @@
         </div>
       </section>
 
-      <!-- STRATEGIC FIT FOR -->
-      <section class="py-16 md:py-24" aria-label="Strategic Fit">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p class="reveal text-[11px] uppercase tracking-[0.3em] text-white/40 mb-6" style="--reveal-delay: 0ms">
-            Strategic Fit For
+      <!-- THE SCARCITY PRINCIPLE -->
+      <section class="py-16 md:py-24 border-y border-white/5 bg-white/[0.02]" aria-label="Market Scarcity">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p class="reveal text-[11px] uppercase tracking-[0.3em] text-accent/80 font-semibold mb-8" style="--reveal-delay: 0ms">
+            The Scarcity Principle
           </p>
           <p
-            class="reveal reveal-lg font-serif-display text-2xl md:text-3xl text-white/75 tracking-tight flex flex-wrap justify-center items-center gap-x-2 md:gap-x-1"
+            class="reveal reveal-lg font-serif-display text-3xl md:text-4xl lg:text-5xl text-white/95 leading-[1.15] tracking-tight mx-auto max-w-4xl"
             style="--reveal-delay: 100ms"
           >
-            <span>AI Infrastructure<span class="text-white/25 px-2">·</span></span>
-            <span>Autonomous Protocols<span class="text-white/25 px-2">·</span></span>
-            <span>M2M Networks<span class="text-white/25 px-2">·</span></span>
-            <span>Venture Studios<span class="text-white/25 px-2">·</span></span>
-            <span>TradFi Arms</span>
+            "Category-defining assets of this caliber, once acquired, permanently exit the market."
           </p>
         </div>
       </section>
 
       <!-- STATS -->
-      <section class="pb-20 md:pb-28" aria-label="Domain qualities">
+      <section class="pb-20 md:pb-28 mt-24" aria-label="Domain qualities">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6 text-center">
             <div class="reveal" style="--reveal-delay: 0ms">
