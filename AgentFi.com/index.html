@@ -59,22 +59,6 @@
           sa.src = "https://scripts.simpleanalyticscdn.com/latest.js";
           sa.setAttribute("data-collect-dnt", "true");
           document.head.appendChild(sa);
-
-          // Umami Analytics
-          var um = document.createElement("script");
-          um.defer = true;
-          um.src = "https://cloud.umami.is/script.js";
-          um.setAttribute("data-website-id", "461c53da-52cb-4210-85b5-8d5c429cc0a5");
-          document.head.appendChild(um);
-
-          // Statcounter
-          window.sc_project = 13339080;
-          window.sc_invisible = 1;
-          window.sc_security = "c01babf0";
-          var sc = document.createElement("script");
-          sc.async = true;
-          sc.src = "https://www.statcounter.com/counter/counter.js";
-          document.head.appendChild(sc);
         }
 
         fetch("/api/geo")
@@ -85,7 +69,6 @@
             }
           })
           .catch(function () {
-            // If geo check fails, load analytics (fail-open)
             loadAnalytics();
           });
       })();
