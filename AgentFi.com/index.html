@@ -226,52 +226,146 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       }
 
-      /* Mobile menu */
+      /* Mobile menu — panel under nav, not full-screen theater */
       .mobile-menu {
-        display: none;
         position: fixed;
         inset: 0;
         z-index: 40;
-        background: rgba(0, 0, 0, 0.94);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
+        pointer-events: none;
+        visibility: hidden;
+        transition: visibility 0s linear 0.28s;
       }
       .mobile-menu.is-open {
-        display: flex;
-        flex-direction: column;
+        pointer-events: auto;
+        visibility: visible;
+        transition-delay: 0s;
+      }
+      .mobile-menu-scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+        border: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .mobile-menu.is-open .mobile-menu-scrim {
+        opacity: 1;
+      }
+      .mobile-menu-panel {
+        position: absolute;
+        top: 3.5rem; /* matches nav h-14 */
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 0.5rem 1rem 1.25rem;
+        opacity: 0;
+        transform: translate3d(0, -6px, 0);
+        transition:
+          opacity 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+          transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      @media (min-width: 640px) {
+        .mobile-menu-panel {
+          top: 4rem; /* matches nav sm:h-16 */
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+        }
+      }
+      .mobile-menu.is-open .mobile-menu-panel {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+      @media (min-width: 768px) {
+        .mobile-menu {
+          display: none !important;
+        }
+      }
+      .mobile-nav-link {
+        display: block;
+        padding: 1rem 0.25rem;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        transition: color 0.2s ease;
+      }
+      .mobile-nav-link:hover,
+      .mobile-nav-link:focus-visible {
+        color: #fff;
+        outline: none;
+      }
+      .mobile-nav-link:last-of-type {
+        border-bottom: none;
+      }
+      .mobile-nav-cta {
+        display: inline-flex;
         align-items: center;
         justify-content: center;
+        width: 100%;
+        padding: 0.85rem 1.5rem;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border: none;
+        border-radius: 0.75rem;
       }
       .hamburger-btn {
         display: flex;
         flex-direction: column;
+        align-items: center;
         justify-content: center;
-        gap: 5px;
-        width: 28px;
-        height: 28px;
+        gap: 6px;
+        width: 44px;
+        height: 44px;
+        margin-right: -10px;
         background: transparent;
         border: none;
         cursor: pointer;
         padding: 0;
         z-index: 50;
         position: relative;
+        -webkit-tap-highlight-color: transparent;
       }
       .hamburger-btn span {
         display: block;
-        width: 100%;
+        width: 18px;
         height: 1.5px;
-        background: rgba(255, 255, 255, 0.85);
-        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.8);
+        transition:
+          transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+          opacity 0.2s ease,
+          background-color 0.2s ease;
         border-radius: 1px;
+        transform-origin: center;
       }
+      .hamburger-btn:hover span,
+      .hamburger-btn:focus-visible span {
+        background: rgba(255, 255, 255, 0.95);
+      }
+      .hamburger-btn:focus-visible {
+        outline: 1px solid rgba(16, 229, 141, 0.45);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+      /* gap 6px + line 1.5px → center-to-center offset = 7.5px */
       .hamburger-btn.is-active span:nth-child(1) {
-        transform: translateY(6.5px) rotate(45deg);
+        transform: translateY(7.5px) rotate(45deg);
       }
       .hamburger-btn.is-active span:nth-child(2) {
         opacity: 0;
+        transform: scaleX(0);
       }
       .hamburger-btn.is-active span:nth-child(3) {
-        transform: translateY(-6.5px) rotate(-45deg);
+        transform: translateY(-7.5px) rotate(-45deg);
       }
 
       .skip-link {
@@ -295,7 +389,38 @@
       }
 
       .form-success.is-visible {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 22rem;
+        padding: 1.5rem 0 0.5rem;
+        animation: form-success-in 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      }
+
+      @keyframes form-success-in {
+        from {
+          opacity: 0;
+          transform: translate3d(0, 8px, 0);
+        }
+        to {
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
+        }
+      }
+
+      .form-success-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        margin-bottom: 1.25rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(16, 229, 141, 0.35);
+        background: rgba(16, 229, 141, 0.06);
+        color: var(--color-accent-primary);
       }
 
       .inquiry-form.is-hidden {
@@ -346,6 +471,16 @@
         .btn-primary:hover {
           transition: none;
           transform: none;
+        }
+
+        .mobile-menu-scrim,
+        .mobile-menu-panel,
+        .hamburger-btn span {
+          transition: none !important;
+        }
+
+        .form-success.is-visible {
+          animation: none !important;
         }
 
         .reveal,
@@ -419,7 +554,14 @@
 
           <!-- Hamburger Button (Mobile only) -->
           <div class="flex md:hidden flex-1 justify-end items-center">
-            <button id="hamburger-btn" class="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+            <button
+              id="hamburger-btn"
+              class="hamburger-btn"
+              type="button"
+              aria-label="Open menu"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+            >
               <span></span>
               <span></span>
               <span></span>
@@ -430,16 +572,32 @@
       </div>
     </nav>
 
-    <!-- Mobile Menu Overlay -->
+    <!-- Mobile Menu: panel under nav -->
     <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
-      <nav class="flex flex-col items-center gap-10" aria-label="Mobile">
-        <a href="#value" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Value</a>
-        <a href="#thesis" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Thesis</a>
-        <a href="#inquire" class="mobile-nav-link font-serif-display text-3xl text-white/90 hover:text-accent transition-colors tracking-tight">Inquire</a>
-        <div class="mt-6 px-4 py-2 rounded border border-white/10 text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">
-          Private Sale
-        </div>
-      </nav>
+      <button
+        type="button"
+        class="mobile-menu-scrim"
+        id="mobile-menu-scrim"
+        tabindex="-1"
+        aria-label="Close menu"
+      ></button>
+      <div class="mobile-menu-panel">
+        <nav class="flex flex-col max-w-7xl mx-auto" aria-label="Mobile">
+          <a href="#value" class="mobile-nav-link">Value</a>
+          <a href="#thesis" class="mobile-nav-link">Thesis</a>
+          <a href="#inquire" class="mobile-nav-link">Inquire</a>
+          <div class="pt-5 flex flex-col gap-3">
+            <span
+              class="self-start px-3 py-1.5 rounded border border-white/10 bg-white/[0.02] text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase"
+            >
+              Private Sale
+            </span>
+            <a href="#inquire" class="mobile-nav-cta btn-primary">
+              Make an Inquiry
+            </a>
+          </div>
+        </nav>
+      </div>
     </div>
 
     <main id="main">
@@ -574,17 +732,53 @@
 
               <div class="h-px bg-white/[0.06] mb-6"></div>
 
-              <div id="form-success" class="form-success text-center py-6" role="status" aria-live="polite">
-                <p class="font-serif-display text-2xl text-white mb-2">Inquiry received.</p>
-                <p class="text-white/60 text-sm font-light leading-relaxed">
-                  Thank you. A private response will follow within 24 hours.
+              <div id="form-success" class="form-success" role="status" aria-live="polite">
+                <div class="form-success-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M5 12.5l4.5 4.5L19 7.5"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="flex items-center gap-3 mb-4 w-full justify-center">
+                  <span class="w-6 h-px bg-white/20" aria-hidden="true"></span>
+                  <span
+                    class="text-[9px] sm:text-[10px] uppercase tracking-[0.28em] font-semibold text-white/55 whitespace-nowrap"
+                    >Confidential · Received</span
+                  >
+                  <span class="w-6 h-px bg-white/20" aria-hidden="true"></span>
+                </div>
+                <p class="font-serif-display text-[1.75rem] sm:text-2xl leading-tight text-white mb-3">
+                  Inquiry received in confidence.
                 </p>
+                <p class="text-white/55 text-sm font-light leading-relaxed max-w-[20rem] mx-auto">
+                  Your message has been logged securely. A private response from the owner typically follows within 24 hours.
+                </p>
+                <div
+                  class="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.22em] text-white/40"
+                >
+                  <span>Direct</span>
+                  <span class="w-1 h-1 rounded-full bg-white/25" aria-hidden="true"></span>
+                  <span>Discreet</span>
+                  <span class="w-1 h-1 rounded-full bg-white/25" aria-hidden="true"></span>
+                  <span>No intermediaries</span>
+                </div>
+                <a
+                  href="#thesis"
+                  class="mt-8 text-[11px] uppercase tracking-[0.22em] font-semibold text-white/70 hover:text-white transition-colors"
+                >
+                  Continue reading the thesis
+                </a>
                 <button
                   type="button"
                   id="form-reset"
-                  class="mt-6 text-[11px] uppercase tracking-[0.28em] font-semibold text-accent hover:text-white transition-colors"
+                  class="mt-4 text-[10px] uppercase tracking-[0.22em] font-medium text-white/35 hover:text-white/60 transition-colors"
                 >
-                  Send another inquiry
+                  Submit a different inquiry
                 </button>
               </div>
 
@@ -973,7 +1167,8 @@
         // Mobile menu
         var hamburgerBtn = document.getElementById("hamburger-btn");
         var mobileMenu = document.getElementById("mobile-menu");
-        var mobileLinks = document.querySelectorAll(".mobile-nav-link");
+        var mobileMenuScrim = document.getElementById("mobile-menu-scrim");
+        var mobileLinks = document.querySelectorAll(".mobile-nav-link, .mobile-nav-cta");
 
         function closeMobileMenu() {
           if (!hamburgerBtn || !mobileMenu) return;
@@ -1007,6 +1202,10 @@
             }
           });
 
+          if (mobileMenuScrim) {
+            mobileMenuScrim.addEventListener("click", closeMobileMenu);
+          }
+
           mobileLinks.forEach(function (link) {
             link.addEventListener("click", closeMobileMenu);
           });
@@ -1015,6 +1214,7 @@
           document.addEventListener("keydown", function (e) {
             if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) {
               closeMobileMenu();
+              hamburgerBtn.focus();
             }
           });
         }
