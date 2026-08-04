@@ -304,20 +304,6 @@
       .mobile-nav-link:last-of-type {
         border-bottom: none;
       }
-      .mobile-nav-cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        padding: 0.85rem 1.5rem;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        text-decoration: none;
-        border: none;
-        border-radius: 0.75rem;
-      }
       .hamburger-btn {
         display: flex;
         flex-direction: column;
@@ -384,25 +370,23 @@
         top: 1rem;
       }
 
+      .form-sending,
       .form-success {
         display: none;
       }
 
+      .form-sending.is-visible,
       .form-success.is-visible {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        display: block;
         text-align: center;
-        min-height: 22rem;
-        padding: 1.5rem 0 0.5rem;
-        animation: form-success-in 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        padding: 2.75rem 0.5rem 2.25rem;
+        animation: form-state-in 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
       }
 
-      @keyframes form-success-in {
+      @keyframes form-state-in {
         from {
           opacity: 0;
-          transform: translate3d(0, 8px, 0);
+          transform: translate3d(0, 6px, 0);
         }
         to {
           opacity: 1;
@@ -410,17 +394,41 @@
         }
       }
 
-      .form-success-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.75rem;
-        height: 2.75rem;
-        margin-bottom: 1.25rem;
-        border-radius: 9999px;
-        border: 1px solid rgba(16, 229, 141, 0.35);
-        background: rgba(16, 229, 141, 0.06);
-        color: var(--color-accent-primary);
+      /* Quiet “mail leaving” pulse — institutional, not playful */
+      .form-sending-track {
+        position: relative;
+        width: 100%;
+        max-width: 11rem;
+        height: 1px;
+        margin: 0 auto 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+      }
+
+      .form-sending-pulse {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(16, 229, 141, 0.15) 20%,
+          var(--color-accent-primary) 50%,
+          rgba(16, 229, 141, 0.15) 80%,
+          transparent 100%
+        );
+        animation: form-sending-travel 1.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+
+      @keyframes form-sending-travel {
+        from {
+          transform: translate3d(-100%, 0, 0);
+        }
+        to {
+          transform: translate3d(350%, 0, 0);
+        }
       }
 
       .inquiry-form.is-hidden {
@@ -479,8 +487,16 @@
           transition: none !important;
         }
 
+        .form-sending.is-visible,
         .form-success.is-visible {
           animation: none !important;
+        }
+
+        .form-sending-pulse {
+          animation: none !important;
+          left: 30%;
+          width: 40%;
+          opacity: 0.7;
         }
 
         .reveal,
@@ -586,16 +602,6 @@
           <a href="#value" class="mobile-nav-link">Value</a>
           <a href="#thesis" class="mobile-nav-link">Thesis</a>
           <a href="#inquire" class="mobile-nav-link">Inquire</a>
-          <div class="pt-5 flex flex-col gap-3">
-            <span
-              class="self-start px-3 py-1.5 rounded border border-white/10 bg-white/[0.02] text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase"
-            >
-              Private Sale
-            </span>
-            <a href="#inquire" class="mobile-nav-cta btn-primary">
-              Make an Inquiry
-            </a>
-          </div>
         </nav>
       </div>
     </div>
@@ -732,53 +738,28 @@
 
               <div class="h-px bg-white/[0.06] mb-6"></div>
 
-              <div id="form-success" class="form-success" role="status" aria-live="polite">
-                <div class="form-success-icon" aria-hidden="true">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M5 12.5l4.5 4.5L19 7.5"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
+              <div id="form-sending" class="form-sending" aria-live="polite" aria-hidden="true">
+                <div class="form-sending-track" aria-hidden="true">
+                  <div class="form-sending-pulse"></div>
                 </div>
-                <div class="flex items-center gap-3 mb-4 w-full justify-center">
-                  <span class="w-6 h-px bg-white/20" aria-hidden="true"></span>
-                  <span
-                    class="text-[9px] sm:text-[10px] uppercase tracking-[0.28em] font-semibold text-white/55 whitespace-nowrap"
-                    >Confidential · Received</span
-                  >
-                  <span class="w-6 h-px bg-white/20" aria-hidden="true"></span>
-                </div>
-                <p class="font-serif-display text-[1.75rem] sm:text-2xl leading-tight text-white mb-3">
+                <p class="text-[10px] uppercase tracking-[0.28em] font-semibold text-white/45">
+                  Sending
+                </p>
+              </div>
+
+              <div id="form-success" class="form-success" role="status" aria-live="polite" aria-hidden="true">
+                <p class="font-serif-display text-2xl text-white mb-3">
                   Inquiry received in confidence.
                 </p>
-                <p class="text-white/55 text-sm font-light leading-relaxed max-w-[20rem] mx-auto">
+                <p class="text-white/55 text-sm font-light leading-relaxed max-w-sm mx-auto">
                   Your message has been logged securely. A private response from the owner typically follows within 24 hours.
                 </p>
-                <div
-                  class="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.22em] text-white/40"
-                >
-                  <span>Direct</span>
-                  <span class="w-1 h-1 rounded-full bg-white/25" aria-hidden="true"></span>
-                  <span>Discreet</span>
-                  <span class="w-1 h-1 rounded-full bg-white/25" aria-hidden="true"></span>
-                  <span>No intermediaries</span>
-                </div>
-                <a
-                  href="#thesis"
-                  class="mt-8 text-[11px] uppercase tracking-[0.22em] font-semibold text-white/70 hover:text-white transition-colors"
-                >
-                  Continue reading the thesis
-                </a>
                 <button
                   type="button"
                   id="form-reset"
-                  class="mt-4 text-[10px] uppercase tracking-[0.22em] font-medium text-white/35 hover:text-white/60 transition-colors"
+                  class="mt-8 text-[10px] uppercase tracking-[0.22em] font-medium text-white/35 hover:text-white/65 transition-colors"
                 >
-                  Submit a different inquiry
+                  Done
                 </button>
               </div>
 
@@ -1168,7 +1149,7 @@
         var hamburgerBtn = document.getElementById("hamburger-btn");
         var mobileMenu = document.getElementById("mobile-menu");
         var mobileMenuScrim = document.getElementById("mobile-menu-scrim");
-        var mobileLinks = document.querySelectorAll(".mobile-nav-link, .mobile-nav-cta");
+        var mobileLinks = document.querySelectorAll(".mobile-nav-link");
 
         function closeMobileMenu() {
           if (!hamburgerBtn || !mobileMenu) return;
@@ -1281,11 +1262,13 @@
 
         // ── Form UX & Auto-Expand Textarea ──
         var form = document.getElementById("inquiry-form");
+        var sending = document.getElementById("form-sending");
         var success = document.getElementById("form-success");
         var resetBtn = document.getElementById("form-reset");
         var messageInput = document.getElementById("message");
         var submitBtn = form ? form.querySelector('button[type="submit"]') : null;
         var submittedAtInput = document.getElementById('submittedAt');
+        var SEND_MIN_MS = 1600;
 
         if (messageInput) {
           messageInput.addEventListener("input", function () {
@@ -1334,20 +1317,45 @@
           }, false);
         }
 
-        function showSuccess() {
-          if (form) form.classList.add("is-hidden");
-          if (success) success.classList.add("is-visible");
+        function wait(ms) {
+          return new Promise(function (resolve) {
+            window.setTimeout(resolve, ms);
+          });
+        }
+
+        function setFormState(state) {
+          // state: "form" | "sending" | "success"
+          if (form) {
+            form.classList.toggle("is-hidden", state !== "form");
+          }
+          if (sending) {
+            var isSending = state === "sending";
+            sending.classList.toggle("is-visible", isSending);
+            sending.setAttribute("aria-hidden", isSending ? "false" : "true");
+          }
+          if (success) {
+            var isSuccess = state === "success";
+            success.classList.toggle("is-visible", isSuccess);
+            success.setAttribute("aria-hidden", isSuccess ? "false" : "true");
+          }
+        }
+
+        function restoreSubmitButton() {
+          if (!submitBtn) return;
+          submitBtn.innerText = "Send Confidential Inquiry";
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = "1";
         }
 
         function showForm() {
+          setFormState("form");
           if (form) {
-            form.classList.remove("is-hidden");
             form.reset();
             if (messageInput) {
               messageInput.style.height = "auto";
             }
           }
-          if (success) success.classList.remove("is-visible");
+          restoreSubmitButton();
         }
 
         if (form) {
@@ -1363,51 +1371,56 @@
               submittedAtInput.value = new Date().toISOString();
             }
 
-            var originalBtnText = submitBtn.innerText;
-            submitBtn.innerText = 'Processing...';
-            submitBtn.disabled = true;
-            submitBtn.style.opacity = '0.7';
-
             var formData = new FormData(form);
             var data = Object.fromEntries(formData.entries());
+            var startedAt = Date.now();
+            var response;
+            var result;
+
+            setFormState("sending");
+            if (submitBtn) {
+              submitBtn.disabled = true;
+            }
 
             try {
-              var response = await fetch('/api/inquiry', {
-                method: 'POST',
+              response = await fetch("/api/inquiry", {
+                method: "POST",
                 headers: {
-                  'Content-Type': 'application/json'
+                  "Content-Type": "application/json",
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
               });
 
-              var result = await response.json();
+              result = await response.json();
+
+              var elapsed = Date.now() - startedAt;
+              if (elapsed < SEND_MIN_MS) {
+                await wait(SEND_MIN_MS - elapsed);
+              }
 
               if (response.ok && result.success) {
-                showSuccess();
+                setFormState("success");
               } else {
+                setFormState("form");
+                restoreSubmitButton();
                 alert("Error: " + (result.error || "Something went wrong. Please try again."));
               }
             } catch (error) {
-              console.error('Submission error:', error);
-              alert('A network error occurred. Please try again later.');
-            } finally {
-              if (!response || !response.ok) {
-                submitBtn.innerText = originalBtnText;
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
+              console.error("Submission error:", error);
+              var elapsedErr = Date.now() - startedAt;
+              if (elapsedErr < SEND_MIN_MS) {
+                await wait(SEND_MIN_MS - elapsedErr);
               }
+              setFormState("form");
+              restoreSubmitButton();
+              alert("A network error occurred. Please try again later.");
             }
           });
         }
 
         if (resetBtn) {
-          resetBtn.addEventListener("click", function() {
+          resetBtn.addEventListener("click", function () {
             showForm();
-            if (submitBtn) {
-               submitBtn.innerText = 'Send Confidential Inquiry';
-               submitBtn.disabled = false;
-               submitBtn.style.opacity = '1';
-            }
           });
         }
 
