@@ -377,9 +377,13 @@
 
       .form-sending.is-visible,
       .form-success.is-visible {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         text-align: center;
-        padding: 2.75rem 0.5rem 2.25rem;
+        min-height: 22rem;
+        padding: 1.5rem 0.5rem;
         animation: form-state-in 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
       }
 
@@ -748,7 +752,7 @@
               </div>
 
               <div id="form-success" class="form-success" role="status" aria-live="polite" aria-hidden="true">
-                <p class="font-serif-display text-2xl text-white mb-3">
+                <p class="font-serif-display text-2xl text-accent mb-3">
                   Inquiry received in confidence.
                 </p>
                 <p class="text-white/55 text-sm font-light leading-relaxed max-w-sm mx-auto">
@@ -757,7 +761,7 @@
                 <button
                   type="button"
                   id="form-reset"
-                  class="mt-8 text-[10px] uppercase tracking-[0.22em] font-medium text-white/35 hover:text-white/65 transition-colors"
+                  class="mt-8 text-[10px] uppercase tracking-[0.22em] font-medium text-white/35 hover:text-accent transition-colors"
                 >
                   Done
                 </button>
