@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agentskills.io/schema/v0.2.0/index.json",
+  "skills": [
+    {
+      "name": "acquire_agentfi_domain",
+      "type": "api",
+      "description": "Submit a confidential inquiry for the acquisition of the AgentFi.com domain.",
+      "url": "https://agentfi.com/.well-known/api-catalog"
+    }
+  ]
+}

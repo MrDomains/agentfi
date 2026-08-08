@@ -1,0 +1,13 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://agentfi.com/api/inquiry",
+      "service-doc": [
+        {
+          "href": "https://agentfi.com/auth.md",
+          "type": "text/markdown"
+        }
+      ]
+    }
+  ]
+}
