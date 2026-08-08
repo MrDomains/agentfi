@@ -1,0 +1,10 @@
+{
+  "issuer": "https://agentfi.com",
+  "authorization_endpoint": "https://agentfi.com/auth",
+  "token_endpoint": "https://agentfi.com/token",
+  "jwks_uri": "https://agentfi.com/.well-known/jwks.json",
+  "grant_types_supported": ["client_credentials"],
+  "agent_auth": {
+    "register_uri": "https://agentfi.com/auth.md"
+  }
+}

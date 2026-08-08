@@ -1,0 +1,7 @@
+{
+  "resource": "https://agentfi.com/api/inquiry",
+  "authorization_servers": [
+    "https://agentfi.com"
+  ],
+  "scopes_supported": ["inquiry:submit"]
+}

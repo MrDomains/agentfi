@@ -1,15 +1,28 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Link",
-          "value": "</.well-known/api-catalog>; rel=\"api-catalog\", </auth.md>; rel=\"service-doc\", </agentfi.md>; rel=\"alternate\"; type=\"text/markdown\""
+          "value": "</.well-known/api-catalog>; rel=\"api-catalog\", </auth.md>; rel=\"service-doc\""
         }
       ]
     }
   ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "Accept",
+          "value": "(?i).*text/markdown.*"
+        }
+      ],
+      "destination": "/agentfi.md"
+    }
+  ]
 }

@@ -2,10 +2,22 @@
   "linkset": [
     {
       "anchor": "https://agentfi.com/api/inquiry",
+      "service-desc": [
+        {
+          "href": "https://agentfi.com/openapi.yaml",
+          "type": "application/vnd.oai.openapi"
+        }
+      ],
       "service-doc": [
         {
           "href": "https://agentfi.com/auth.md",
           "type": "text/markdown"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://agentfi.com/status",
+          "type": "application/json"
         }
       ]
     }

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/server-card.json",
+  "serverInfo": {
+    "name": "AgentFi",
+    "version": "1.0.0"
+  },
+  "transport": {
+    "type": "sse",
+    "endpoint": "https://agentfi.com/mcp/sse"
+  },
+  "capabilities": {
+    "tools": true
+  }
+}
