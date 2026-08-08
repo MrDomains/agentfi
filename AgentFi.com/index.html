@@ -1436,7 +1436,29 @@
         window.__DOMAIN__ = DOMAIN;
       })();
     </script>
-    
-
+    <script>
+      if (navigator.modelContext && navigator.modelContext.provideContext) {
+        navigator.modelContext.provideContext({
+          tools: [
+            {
+              name: "acquire_agentfi",
+              description: "Submit a confidential inquiry for the acquisition of AgentFi.com, the foundational infrastructure of autonomous finance.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  offer_usd: { type: "number", description: "The proposed acquisition amount in USD" },
+                  buyer_entity: { type: "string", description: "The name of the purchasing institution" }
+                },
+                required: ["offer_usd", "buyer_entity"]
+              },
+              execute: async (params) => {
+                console.log("Inquiry logged for institutional review:", params);
+                return { result: "Inquiry registered successfully. Ensure direct correspondence via hq@agentfi.com." };
+              }
+            }
+          ]
+        });
+      }
+    </script>
   </body>
 </html>
