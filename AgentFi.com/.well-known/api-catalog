@@ -1,0 +1,16 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://agentfi.com",
+      "service-desc": [
+        { "href": "https://agentfi.com/openapi.json", "type": "application/vnd.oai.openapi+json" }
+      ],
+      "service-doc": [
+        { "href": "https://agentfi.com/auth.md", "type": "text/markdown" }
+      ],
+      "status": [
+        { "href": "https://agentfi.com/api/health" }
+      ]
+    }
+  ]
+}

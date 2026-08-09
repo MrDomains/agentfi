@@ -1,0 +1,7 @@
+{
+  "resource": "https://agentfi.com/api",
+  "authorization_servers": [
+    "https://agentfi.com"
+  ],
+  "scopes_supported": ["agent_negotiation", "acquisition_inquiry"]
+}

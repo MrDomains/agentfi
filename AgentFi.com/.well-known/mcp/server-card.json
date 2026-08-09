@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "serverInfo": {
+    "name": "AgentFi-Sale-Gateway",
+    "version": "1.0.0",
+    "description": "Gateway for AI Agents evaluating the AgentFi.com domain acquisition."
+  },
+  "transport": {
+    "type": "sse",
+    "endpoint": "https://agentfi.com/api/mcp"
+  },
+  "capabilities": {
+    "prompts": true,
+    "resources": true,
+    "tools": true
+  }
+}
