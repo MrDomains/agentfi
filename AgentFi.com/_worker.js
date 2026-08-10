@@ -6,13 +6,13 @@ function getCountry(request) {
   return request.cf?.country || request.headers.get("cf-ipcountry") || "Unknown";
 }
 
-function json(data, status = 200) {
+function json(data, status = 200, corsOrigin = "*") {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store",
-      "Access-Control-Allow-Origin": "https://agentfi.com",
+      "Access-Control-Allow-Origin": corsOrigin,
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
@@ -33,12 +33,16 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     const acceptHeader = request.headers.get("Accept") || "";
+    const origin = request.headers.get("Origin") || "*";
+    
+    // Δυναμικό CORS: Επιτρέπουμε μόνο τα δικά μας domains (με και χωρίς www)
+    const allowedOrigin = (origin === "https://www.agentfi.com" || origin === "https://agentfi.com") ? origin : "https://agentfi.com";
 
     // 1. CORS Preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         headers: {
-          "Access-Control-Allow-Origin": "https://agentfi.com",
+          "Access-Control-Allow-Origin": allowedOrigin,
           "Access-Control-Allow-Methods": "POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type",
         }
@@ -48,15 +52,14 @@ export default {
     // 2. Υπάρχον Geo API
     if (path === "/api/geo") {
       const country = getCountry(request);
-      return json({ country: country || null, isGreekVisitor: country === "GR" });
+      return json({ country: country || null, isGreekVisitor: country === "GR" }, 200, allowedOrigin);
     }
 
     // 3. Inquiry API (Φόρμα επικοινωνίας)
     if (path === "/api/inquiry" && request.method === "POST") {
       try {
-        const origin = request.headers.get("Origin");
-        if (origin && origin !== "https://agentfi.com" && origin !== "https://www.agentfi.com") {
-           return json({ error: "Unauthorized request origin." }, 403);
+        if (origin !== "*" && origin !== "https://agentfi.com" && origin !== "https://www.agentfi.com") {
+           return json({ error: "Unauthorized request origin." }, 403, allowedOrigin);
         }
 
         const clientIP = request.headers.get("cf-connecting-ip") || "unknown-ip";
@@ -68,7 +71,7 @@ export default {
           limitData.resetTime = now + 3600000;
         }
         if (limitData.count >= 5) {
-          return json({ error: "Too many requests. Please try again later." }, 429);
+          return json({ error: "Too many requests. Please try again later." }, 429, allowedOrigin);
         }
         limitData.count++;
         rateLimitMap.set(clientIP, limitData);
@@ -76,10 +79,10 @@ export default {
         const body = await request.json();
         const { firstName, lastName, email, message, website } = body;
 
-        if (website) return json({ success: true, message: "Inquiry received." }); // Honeypot
+        if (website) return json({ success: true, message: "Inquiry received." }, 200, allowedOrigin); // Honeypot
 
-        if (!firstName || !lastName || !email || !message) return json({ error: "All required fields must be filled." }, 400);
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Please provide a valid email address." }, 400);
+        if (!firstName || !lastName || !email || !message) return json({ error: "All required fields must be filled." }, 400, allowedOrigin);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Please provide a valid email address." }, 400, allowedOrigin);
 
         const country = getCountry(request);
         const inquiryId = generateInquiryId(); 
@@ -109,10 +112,15 @@ export default {
           })
         });
 
-        if (!resendResponse.ok) throw new Error("Email delivery failed.");
-        return json({ success: true, inquiryId });
+        if (!resendResponse.ok) {
+          const errorText = await resendResponse.text();
+          // Πλέον θα βλέπουμε ΑΚΡΙΒΩΣ τι λέει το Resend αν μπλοκάρει
+          return json({ error: `Resend API Error: ${errorText}` }, 500, allowedOrigin);
+        }
+        
+        return json({ success: true, inquiryId }, 200, allowedOrigin);
       } catch (error) {
-        return json({ error: "Internal server error." }, 500);
+        return json({ error: `Internal error: ${error.message}` }, 500, allowedOrigin);
       }
     }
 
@@ -231,16 +239,14 @@ To interact with the AgentFi.com acquisition APIs or to register as a broker age
       });
     }
 
-    // 10. Fallback: Σερβίρισμα των κανονικών αρχείων του site (HTML, εικόνες) μέσω του Cloudflare Pages (env.ASSETS)
+    // 10. Fallback: Σερβίρισμα των κανονικών αρχείων του site
     let response;
     try {
-      // Αυτός είναι ο σωστός τρόπος για να διαβάσει το Cloudflare τα αρχεία του project σου
       response = await env.ASSETS.fetch(request);
     } catch (e) {
       response = new Response("Not found", { status: 404 });
     }
 
-    // Επιστρέφουμε την τελική απάντηση, "κολλώντας" τα Link Headers πάνω σε κάθε τι που φορτώνει
     const newResponse = new Response(response.body, response);
     newResponse.headers.set(
       "Link",
