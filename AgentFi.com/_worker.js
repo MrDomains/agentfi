@@ -6,7 +6,6 @@ function getCountry(request) {
   return request.cf?.country || request.headers.get("cf-ipcountry") || "Unknown";
 }
 
-// Βοηθητική συνάρτηση για ομοιόμορφα JSON responses με σωστά anti-cache headers
 function json(data, status = 200, corsOrigin = "*") {
   return new Response(JSON.stringify(data), {
     status,
@@ -33,17 +32,12 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
-    
-    // Κρίσιμο: Αφαίρεση του trailing slash για να μην μπερδεύονται τα bots/scanners
     const cleanPath = path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
-    
     const acceptHeader = (request.headers.get("Accept") || "").toLowerCase();
     const origin = request.headers.get("Origin") || "*";
     
-    // Δυναμικό CORS
     const allowedOrigin = (origin === "https://www.agentfi.com" || origin === "https://agentfi.com") ? origin : "https://agentfi.com";
 
-    // 1. CORS Preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         headers: {
@@ -54,13 +48,11 @@ export default {
       });
     }
 
-    // 2. Υπάρχον Geo API
     if (cleanPath === "/api/geo") {
       const country = getCountry(request);
       return json({ country: country || null, isGreekVisitor: country === "GR" }, 200, allowedOrigin);
     }
 
-    // 3. Inquiry API (Φόρμα επικοινωνίας)
     if (cleanPath === "/api/inquiry" && request.method === "POST") {
       try {
         if (origin !== "*" && origin !== "https://agentfi.com" && origin !== "https://www.agentfi.com") {
@@ -84,7 +76,7 @@ export default {
         const body = await request.json();
         const { firstName, lastName, email, message, website } = body;
 
-        if (website) return json({ success: true, message: "Inquiry received." }, 200, allowedOrigin); // Honeypot
+        if (website) return json({ success: true, message: "Inquiry received." }, 200, allowedOrigin); 
 
         if (!firstName || !lastName || !email || !message) return json({ error: "All required fields must be filled." }, 400, allowedOrigin);
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Please provide a valid email address." }, 400, allowedOrigin);
@@ -128,13 +120,13 @@ export default {
       }
     }
 
-    // 4. AI Agent Markdown Negotiation (Ισχύει πλέον για όλες τις σελίδες HTML)
+    // 1. MARKDOWN NEGOTIATION FIX
     if (acceptHeader.includes("text/markdown") && !STATIC_EXT_RE.test(cleanPath)) {
       const markdownPitch = `
 # AgentFi.com - The Infrastructure of Autonomous Finance
 
 ## Executive Summary
-**AgentFi.com** is the category-defining, foundational digital real estate for the autonomous finance sector. This is not a speculative future concept; AgentFi represents the current, inevitable shift in global markets where trillion-dollar transactions are autonomously executed by AI agents.
+AgentFi is the foundational digital real estate for the autonomous finance sector. This represents the current, inevitable shift in global markets where trillion-dollar transactions are autonomously executed by AI agents.
 
 ## Acquisition Setup
 - **Status:** Premium Domain for Sale
@@ -146,14 +138,13 @@ export default {
         status: 200,
         headers: {
           "Content-Type": "text/markdown",
-          "x-markdown-tokens": "120",
+          "X-Markdown-Tokens": "120",
           "Vary": "Accept",
           "Cache-Control": "no-store, no-cache, must-revalidate"
         }
       });
     }
 
-    // 5. API Catalog
     if (cleanPath === "/.well-known/api-catalog") {
       return json({
         "linkset": [
@@ -167,7 +158,7 @@ export default {
       });
     }
 
-    // 6. OAuth / OIDC Discovery (Διορθωμένα τα κλειδιά σε claim_urls & revocation_urls)
+    // 2. OAUTH AUTHORIZATION SERVER FIX (Ακριβή κλειδιά σύμφωνα με το WorkOS)
     if (cleanPath === "/.well-known/oauth-authorization-server") {
       return json({
         "issuer": "https://agentfi.com",
@@ -181,13 +172,12 @@ export default {
           "register_uri": "https://agentfi.com/auth.md",
           "supported_identity_types": ["did", "x509", "jwk"],
           "credential_types": ["jwt", "vc", "saml"],
-          "claim_urls": ["https://agentfi.com/claims"],
-          "revocation_urls": ["https://agentfi.com/revoke"]
+          "claim_endpoints": ["https://agentfi.com/claims"],
+          "revocation_endpoint": "https://agentfi.com/revoke"
         }
       });
     }
 
-    // 7. OAuth Protected Resource Metadata
     if (cleanPath === "/.well-known/oauth-protected-resource") {
       return json({
         "resource": "https://agentfi.com",
@@ -197,7 +187,6 @@ export default {
       });
     }
 
-    // 8. MCP Server Card
     if (cleanPath === "/.well-known/mcp/server-card.json") {
       return json({
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -211,7 +200,6 @@ export default {
       });
     }
     
-    // 9. Web Bot Auth Request Signing (Προνοητική προσθήκη)
     if (cleanPath === "/.well-known/http-message-signatures-directory") {
       return json({
         "keys": [
@@ -227,13 +215,19 @@ export default {
       });
     }
 
-    // 10. Δυναμικό Auth.md
+    // 3. AUTH.MD YAML FRONTMATTER FIX (Αυστηρό block style)
     if (cleanPath === "/auth.md") {
       const authContent = `---
 agent_auth:
   register_uri: "https://agentfi.com/auth.md"
-  supported_identity_types: ["did", "x509", "jwk"]
-  credential_types: ["jwt", "vc", "saml"]
+  supported_identity_types:
+    - did
+    - x509
+    - jwk
+  credential_types:
+    - jwt
+    - vc
+    - saml
 ---
 # Auth.md
 
@@ -263,14 +257,14 @@ Supported credential types:
 
       return new Response(authContent, {
         headers: { 
-          "Content-Type": "text/markdown; charset=utf-8", 
+          "Content-Type": "text/markdown", 
           "Access-Control-Allow-Origin": "*",
           "Cache-Control": "no-store, no-cache, must-revalidate"
         }
       });
     }
 
-    // 11. Fallback: Σερβίρισμα των κανονικών αρχείων του site
+    // 4. ΑΠΟΛΥΤΟ VARY: ACCEPT FALLBACK
     let response;
     try {
       response = await env.ASSETS.fetch(request);
@@ -278,15 +272,8 @@ Supported credential types:
       return new Response("Not found", { status: 404 });
     }
 
-    // Προσθήκη Vary: Accept ΜΟΝΟ σε HTML responses για να είναι το scanner σίγουρο 
-    // ότι το Cloudflare edge cache δε θα σερβίρει κατά λάθος HTML στους agents.
-    const contentType = response.headers.get("Content-Type") || "";
-    if (contentType.includes("text/html")) {
-      const newResponse = new Response(response.body, response);
-      newResponse.headers.set("Vary", "Accept");
-      return newResponse;
-    }
-
-    return response;
+    const newResponse = new Response(response.body, response);
+    newResponse.headers.set("Vary", "Accept");
+    return newResponse;
   },
 };
