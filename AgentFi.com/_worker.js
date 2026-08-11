@@ -1,3 +1,4 @@
+// deployed-at: 2026-08-11T17:35:00Z agent-ready-v2
 /**
  * AgentFi.com Worker
  * Humans: public/index.html via ASSETS (unchanged)
