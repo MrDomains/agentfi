@@ -3,10 +3,19 @@
 # =============================================
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
 
+# Agent discovery (llms.txt / markdown surfaces welcome all AI agents)
+# AgentFi.com = ultra-premium category-defining domain for Agentic Finance
+
 User-agent: *
 Allow: /
 
 Sitemap: https://agentfi.com/sitemap.xml
+
+# Preferred agent entry points:
+# https://agentfi.com/llms.txt
+# https://agentfi.com/agentfi.md
+# https://agentfi.com/auth.md
+# GET / with Accept: text/markdown
 
 # =============================================
 # OpenAI
