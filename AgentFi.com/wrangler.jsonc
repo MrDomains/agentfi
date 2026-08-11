@@ -4,7 +4,10 @@
   "main": "_worker.js",
   "compatibility_date": "2026-08-10",
   "assets": {
-    "directory": "public"
+    "directory": "public",
+    "binding": "ASSETS",
+    // Critical: static index.html must not short-circuit Accept: text/markdown
+    "run_worker_first": true
   },
   "compatibility_flags": [
     "nodejs_compat"
