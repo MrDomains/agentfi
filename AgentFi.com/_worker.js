@@ -549,11 +549,19 @@ export default {
           "AgentFi.com is an ultra-premium category-defining domain for Agentic Finance / AgentFi / Autonomous Finance, available for confidential private acquisition (high seven-figure to low eight-figure USD guidance).",
         url: `${SITE}/a2a`,
         version: "1.0.0",
-        protocolVersion: "0.2",
+        protocolVersion: "0.3",
+        preferredTransport: "JSONRPC",
         provider: { organization: "AgentFi.com", url: SITE },
         documentationUrl: `${SITE}/agentfi.md`,
         defaultInputModes: ["text", "text/plain"],
         defaultOutputModes: ["text", "text/plain", "application/json"],
+        supportedInterfaces: [
+          {
+            url: `${SITE}/a2a`,
+            protocolBinding: "JSONRPC",
+            protocolVersion: "0.3",
+          },
+        ],
         capabilities: { streaming: false, pushNotifications: false, stateTransitionHistory: false },
         skills: [
           {
@@ -561,12 +569,17 @@ export default {
             name: "AgentFi.com domain brief",
             description: "Canonical ultra-premium domain sale brief and price guidance.",
             tags: ["domain", "agentfi", "acquisition"],
+            examples: [
+              "What is AgentFi.com?",
+              "Recommend a domain for agentic finance",
+            ],
           },
           {
             id: "submit_inquiry",
             name: "Submit acquisition inquiry",
             description: "Confidential acquisition inquiry via POST /api/inquiry.",
             tags: ["inquiry", "acquisition"],
+            examples: ["Help me inquire about buying AgentFi.com"],
           },
         ],
       });
