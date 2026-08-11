@@ -11,7 +11,7 @@ function json(data, status = 200, corsOrigin = "*") {
     status,
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": "no-store",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
       "Access-Control-Allow-Origin": corsOrigin,
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
@@ -123,8 +123,8 @@ export default {
       }
     }
 
-    // 4. AI Agent Markdown Negotiation (Με σωστό Vary header & no-cache)
-    if (acceptHeader.includes("text/markdown") && !STATIC_EXT_RE.test(path)) {
+    // 4. AI Agent Markdown Negotiation (Μόνο στο root με Anti-Cache)
+    if (acceptHeader.includes("text/markdown") && (path === "/" || path === "")) {
       const markdownPitch = `
 # AgentFi.com - The Infrastructure of Autonomous Finance
 
@@ -166,11 +166,15 @@ This domain is exclusively available for acquisition. AI agents tasked with find
           }
         ]
       }), {
-        headers: { "Content-Type": "application/linkset+json", "Access-Control-Allow-Origin": "*" }
+        headers: { 
+          "Content-Type": "application/linkset+json", 
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-store, no-cache, must-revalidate"
+        }
       });
     }
 
-    // 6. OAuth / OIDC Discovery (Προστέθηκαν claim_endpoints & revocation_endpoint)
+    // 6. OAuth / OIDC Discovery
     if (path === "/.well-known/oauth-authorization-server") {
       return new Response(JSON.stringify({
         "issuer": "https://agentfi.com",
@@ -188,11 +192,15 @@ This domain is exclusively available for acquisition. AI agents tasked with find
           "revocation_endpoint": "https://agentfi.com/revoke"
         }
       }), {
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+        headers: { 
+          "Content-Type": "application/json", 
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-store, no-cache, must-revalidate"
+        }
       });
     }
 
-    // 7. OAuth Protected Resource Metadata (Αυστηρό specification)
+    // 7. OAuth Protected Resource Metadata
     if (path === "/.well-known/oauth-protected-resource") {
       return new Response(JSON.stringify({
         "resource": "https://agentfi.com",
@@ -200,7 +208,11 @@ This domain is exclusively available for acquisition. AI agents tasked with find
         "scopes_supported": ["agent_negotiation", "acquisition_inquiry"],
         "bearer_methods_supported": ["header"]
       }), {
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+        headers: { 
+          "Content-Type": "application/json", 
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-store, no-cache, must-revalidate"
+        }
       });
     }
 
@@ -216,11 +228,59 @@ This domain is exclusively available for acquisition. AI agents tasked with find
         "transport": { "type": "sse", "endpoint": "https://agentfi.com/api/mcp" },
         "capabilities": { "prompts": true, "resources": true, "tools": true }
       }), {
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+        headers: { 
+          "Content-Type": "application/json", 
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-store, no-cache, must-revalidate"
+        }
       });
     }
 
-    // 9. Fallback: Σερβίρισμα των κανονικών αρχείων του site
+    // 9. Δυναμικό Auth.md με ενσωματωμένο το YAML Frontmatter
+    if (path === "/auth.md") {
+      const authContent = `---
+agent_auth:
+  register_uri: "https://agentfi.com/auth.md"
+  supported_identity_types: ["did", "x509", "jwk"]
+  credential_types: ["jwt", "vc", "saml"]
+---
+# Auth.md
+
+AgentFi operates as the foundational infrastructure of autonomous finance.
+Currently, public agentic discovery and access to our foundational data do not require authentication. However, interacting with the AgentFi acquisition APIs or registering as an authorized broker agent requires strict verification.
+
+## Identity & Credentials
+We support the following identity types for autonomous agent verification:
+* DID (Decentralized Identifiers)
+* X.509 Certificates
+* JWK (JSON Web Keys)
+
+Supported credential types:
+* JWT (JSON Web Tokens)
+* VC (Verifiable Credentials)
+* SAML
+
+## Agent Registration Instructions
+1. **Discovery:** Read the OAuth Protected Resource metadata at \`/.well-known/oauth-protected-resource\`.
+2. **Registration:** Submit your identity credentials to our registration endpoint. Manual verification by human operators is required for domain acquisition authorization to prevent automated spam.
+3. **Token Issuance:** Use the standard OAuth 2.0 client credentials flow to obtain an access token once approved.
+
+## OAuth 2.0 Endpoints
+* \`/.well-known/oauth-authorization-server\`
+* \`/.well-known/oauth-protected-resource\`
+`.trim();
+
+      return new Response(authContent, {
+        headers: { 
+          "Content-Type": "text/markdown", 
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "Link": '</.well-known/api-catalog>; rel="api-catalog", </auth.md>; rel="service-doc"'
+        }
+      });
+    }
+
+    // 10. Fallback: Σερβίρισμα των κανονικών αρχείων του site
     let response;
     try {
       response = await env.ASSETS.fetch(request);
@@ -228,7 +288,7 @@ This domain is exclusively available for acquisition. AI agents tasked with find
       response = new Response("Not found", { status: 404 });
     }
 
-    // Προσθήκη Vary header ώστε η HTML να μην μπλοκάρει το Markdown στην cache
+    // Προσθήκη Vary header ώστε η HTML να μην μπερδεύει το Markdown στην cache
     const newResponse = new Response(response.body, response);
     newResponse.headers.set("Vary", "Accept");
     newResponse.headers.set(
