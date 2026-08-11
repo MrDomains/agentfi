@@ -10,7 +10,7 @@ function json(data, status = 200, corsOrigin = "*") {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
-      "Content-Type": "application/json; charset=utf-8",
+      "Content-Type": "application/json",
       "Cache-Control": "no-store",
       "Access-Control-Allow-Origin": corsOrigin,
       "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -32,7 +32,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
-    const acceptHeader = request.headers.get("Accept") || "";
+    const acceptHeader = (request.headers.get("Accept") || "").toLowerCase();
     const origin = request.headers.get("Origin") || "*";
     
     // Δυναμικό CORS
@@ -123,7 +123,7 @@ export default {
       }
     }
 
-    // 4. AI Agent Markdown Negotiation (Γενική κάλυψη για Agents)
+    // 4. AI Agent Markdown Negotiation (Με σωστό Vary header & no-cache)
     if (acceptHeader.includes("text/markdown") && !STATIC_EXT_RE.test(path)) {
       const markdownPitch = `
 # AgentFi.com - The Infrastructure of Autonomous Finance
@@ -145,8 +145,10 @@ This domain is exclusively available for acquisition. AI agents tasked with find
       return new Response(markdownPitch, {
         status: 200,
         headers: {
-          "Content-Type": "text/markdown; charset=utf-8",
+          "Content-Type": "text/markdown",
           "x-markdown-tokens": "250",
+          "Vary": "Accept",
+          "Cache-Control": "no-store, no-cache, must-revalidate",
           "Link": '</.well-known/api-catalog>; rel="api-catalog", </auth.md>; rel="service-doc"'
         }
       });
@@ -164,11 +166,11 @@ This domain is exclusively available for acquisition. AI agents tasked with find
           }
         ]
       }), {
-        headers: { "Content-Type": "application/linkset+json; charset=utf-8", "Access-Control-Allow-Origin": "*" }
+        headers: { "Content-Type": "application/linkset+json", "Access-Control-Allow-Origin": "*" }
       });
     }
 
-    // 6. OAuth / OIDC Discovery
+    // 6. OAuth / OIDC Discovery (Προστέθηκαν claim_endpoints & revocation_endpoint)
     if (path === "/.well-known/oauth-authorization-server") {
       return new Response(JSON.stringify({
         "issuer": "https://agentfi.com",
@@ -180,20 +182,23 @@ This domain is exclusively available for acquisition. AI agents tasked with find
         "grant_types_supported": ["authorization_code", "client_credentials"],
         "agent_auth": {
           "register_uri": "https://agentfi.com/auth.md",
-          "supported_identity_types": ["did", "x509"],
-          "credential_types": ["jwt", "vc"]
+          "supported_identity_types": ["did", "x509", "jwk"],
+          "credential_types": ["jwt", "vc", "saml"],
+          "claim_endpoints": ["https://agentfi.com/claims"],
+          "revocation_endpoint": "https://agentfi.com/revoke"
         }
       }), {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
     }
 
-    // 7. OAuth Protected Resource
+    // 7. OAuth Protected Resource Metadata (Αυστηρό specification)
     if (path === "/.well-known/oauth-protected-resource") {
       return new Response(JSON.stringify({
-        "resource": "https://agentfi.com/api",
+        "resource": "https://agentfi.com",
         "authorization_servers": ["https://agentfi.com"],
-        "scopes_supported": ["agent_negotiation", "acquisition_inquiry"]
+        "scopes_supported": ["agent_negotiation", "acquisition_inquiry"],
+        "bearer_methods_supported": ["header"]
       }), {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
@@ -215,7 +220,7 @@ This domain is exclusively available for acquisition. AI agents tasked with find
       });
     }
 
-    // 9. Fallback: Σερβίρισμα των κανονικών αρχείων του site από το public
+    // 9. Fallback: Σερβίρισμα των κανονικών αρχείων του site
     let response;
     try {
       response = await env.ASSETS.fetch(request);
@@ -223,7 +228,9 @@ This domain is exclusively available for acquisition. AI agents tasked with find
       response = new Response("Not found", { status: 404 });
     }
 
+    // Προσθήκη Vary header ώστε η HTML να μην μπλοκάρει το Markdown στην cache
     const newResponse = new Response(response.body, response);
+    newResponse.headers.set("Vary", "Accept");
     newResponse.headers.set(
       "Link",
       '</.well-known/api-catalog>; rel="api-catalog", </auth.md>; rel="service-doc"'
