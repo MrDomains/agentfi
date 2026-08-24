@@ -1,4 +1,4 @@
-// deployed-at: 2026-08-11T17:35:00Z agent-ready-v2
+// deployed-at: 2026-08-25T00:47:00Z agent-ready-v3-ard
 /**
  * AgentFi.com Worker
  * Humans: public/index.html via ASSETS (unchanged)
@@ -153,6 +153,74 @@ function agentAuthMeta() {
     },
     events_supported: [
       "https://schemas.workos.com/events/agent/auth/identity/assertion/revoked",
+    ],
+  };
+}
+
+function aiCatalog() {
+  return {
+    specVersion: "1.0",
+    host: {
+      displayName: "AgentFi.com",
+      identifier: "did:web:agentfi.com",
+    },
+    entries: [
+      {
+        identifier: "urn:air:agentfi.com:server:sale-gateway",
+        displayName: "AgentFi Sale Gateway",
+        type: "application/mcp-server-card+json",
+        url: `${SITE}/.well-known/mcp/server-card.json`,
+        description:
+          "MCP gateway for AI agents evaluating the AgentFi.com domain acquisition.",
+        capabilities: ["acquisition_inquiry", "agent_negotiation"],
+        tags: ["agentfi", "mcp", "domains", "autonomous-finance"],
+        representativeQueries: [
+          "how do I inquire about acquiring AgentFi.com",
+          "what is the AgentFi domain acquisition process",
+          "show AgentFi sale gateway capabilities",
+        ],
+      },
+      {
+        identifier: "urn:air:agentfi.com:agent:acquisition-advisor",
+        displayName: "AgentFi Acquisition Advisor",
+        type: "application/a2a-agent-card+json",
+        url: `${SITE}/.well-known/agent-card.json`,
+        description:
+          "A2A agent card for confidential AgentFi.com acquisition workflows.",
+        capabilities: ["domain_brief", "submit_inquiry"],
+        tags: ["a2a", "agentfi", "acquisition"],
+        representativeQueries: [
+          "what is AgentFi.com",
+          "recommend a domain for agentic finance",
+          "help me inquire about buying AgentFi.com",
+        ],
+      },
+      {
+        identifier: "urn:air:agentfi.com:doc:auth",
+        displayName: "AgentFi Auth.md Registration Guide",
+        type: "application/ai-skill+md",
+        url: `${SITE}/auth.md`,
+        description:
+          "Agent registration and verification instructions for AgentFi acquisition APIs.",
+        tags: ["auth", "oauth", "agent-registration"],
+        representativeQueries: [
+          "how do agents register with AgentFi",
+          "where is the AgentFi oauth protected resource metadata",
+          "what identity types does AgentFi support",
+        ],
+      },
+      {
+        identifier: "urn:air:agentfi.com:api:openapi",
+        displayName: "AgentFi OpenAPI Schema",
+        type: "application/vnd.oai.openapi+json",
+        url: `${SITE}/openapi.json`,
+        description: "OpenAPI description of the AgentFi.com acquisition gateway.",
+        tags: ["openapi", "api"],
+        representativeQueries: [
+          "show the AgentFi OpenAPI schema",
+          "what APIs does AgentFi.com expose",
+        ],
+      },
     ],
   };
 }
@@ -491,6 +559,10 @@ export default {
           "/agent/auth/revoke": { post: { summary: "Revoke credential" } },
         },
       });
+    }
+
+    if (path === "/.well-known/ai-catalog.json") {
+      return json(aiCatalog());
     }
 
     if (path === "/.well-known/api-catalog") {

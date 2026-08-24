@@ -1,5 +1,5 @@
 /*
-  Link: </.well-known/api-catalog>; rel="api-catalog", </auth.md>; rel="service-doc", </llms.txt>; rel="describedby", </agentfi.md>; rel="alternate"; type="text/markdown"
+  Link: </.well-known/api-catalog>; rel="api-catalog", </auth.md>; rel="service-doc", </llms.txt>; rel="describedby", </agentfi.md>; rel="alternate"; type="text/markdown", </.well-known/ai-catalog.json>; rel="describedby"; type="application/json"
   Vary: Accept
 
 /.well-known/api-catalog
@@ -16,3 +16,7 @@
 
 /.well-known/agent-card.json
   Content-Type: application/json
+
+/.well-known/ai-catalog.json
+  Content-Type: application/json
+  Access-Control-Allow-Origin: *
