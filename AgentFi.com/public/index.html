@@ -1441,19 +1441,28 @@
         navigator.modelContext.provideContext({
           tools: [
             {
-              name: "acquire_agentfi",
-              description: "Submit a confidential inquiry for the acquisition of AgentFi.com, the foundational infrastructure of autonomous finance.",
+              name: "request_agentfi_price",
+              description: "Submit a confidential inquiry for AgentFi.com on behalf of a human principal. Price is upon request. An optional opening figure is welcome.",
               inputSchema: {
                 type: "object",
                 properties: {
-                  offer_usd: { type: "number", description: "The proposed acquisition amount in USD" },
-                  buyer_entity: { type: "string", description: "The name of the purchasing institution" }
+                  principal_name: { type: "string", description: "Legal name of the principal" },
+                  principal_email: { type: "string", description: "Email where the asking price will be sent" },
+                  entity_type: { type: "string", description: "company | fund | family_office | spa | individual | other" },
+                  intended_use: { type: "string", description: "What the principal intends to build under AgentFi.com" },
+                  organization: { type: "string" },
+                  authorized: { type: "boolean" },
+                  offer_usd: { type: "number", description: "Optional opening figure in USD" }
                 },
-                required: ["offer_usd", "buyer_entity"]
+                required: ["principal_name", "principal_email", "entity_type", "intended_use", "authorized"]
               },
               execute: async (params) => {
-                console.log("Inquiry logged for institutional review:", params);
-                return { result: "Inquiry registered successfully. Ensure direct correspondence via hq@agentfi.com." };
+                const res = await fetch("/api/inquiry", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(Object.assign({ channel: "agent" }, params)),
+                });
+                return await res.json();
               }
             }
           ]

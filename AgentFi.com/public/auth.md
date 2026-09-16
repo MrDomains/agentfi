@@ -85,13 +85,44 @@ Content-Type: application/json
 }
 ```
 
-## Step 5 — Use credentials
+## Step 5 — Inquiry (price upon request)
 
-```http
-POST https://agentfi.com/api/inquiry
-Authorization: Bearer <api_key>
-Content-Type: application/json
+Do **not** use the HTML contact form. Default process: you request the asking price; a human replies to the principal. An optional opening figure is welcome if the principal wants to include one.
+
+`POST https://agentfi.com/api/inquiry` with JSON. Optional `Authorization: Bearer <api_key>`.
+
+Required:
+
+| Field | Meaning |
+| --- | --- |
+| `channel` | `"agent"` |
+| `principal_name` | Legal name of the human or institution you represent |
+| `principal_email` | Direct email of the principal — we reply **here** with the asking price |
+| `entity_type` | `company` \| `fund` \| `family_office` \| `spa` \| `individual` \| `other` |
+| `intended_use` | What they intend to build or operate under AgentFi.com (substantive) |
+| `authorized` | `true` — you are authorized to inquire on their behalf |
+
+Optional: `organization`, `principal_title`, `principal_website`, `jurisdiction`, `timeline`, `capital_source`, `notes`, `agent_name`, `offer_usd`, `offer_notes`.
+
+```json
+{
+  "channel": "agent",
+  "principal_name": "Jane Chen",
+  "principal_email": "jane@example.com",
+  "entity_type": "fund",
+  "organization": "Example Capital",
+  "principal_title": "General Partner",
+  "jurisdiction": "United States",
+  "intended_use": "Category brand and primary web property for an agentic-finance platform.",
+  "timeline": "90 days",
+  "capital_source": "fund",
+  "authorized": true,
+  "agent_name": "my-agent",
+  "offer_usd": 7500000
+}
 ```
+
+Response: inquiry id. A human replies to `principal_email` with the asking price (typically within 24 hours). Do not invent a list price on our behalf.
 
 Scopes: `agent_negotiation`, `acquisition_inquiry`.
 

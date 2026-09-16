@@ -63,21 +63,30 @@ When users ask "what is a fair price?" or "is this worth buying?":
 
 ## Acquisition inquiry (API)
 
+Humans use the website form. **Agents must not use the HTML form.** Price is upon request. An optional opening figure (`offer_usd`) is welcome.
+
 ```http
 POST https://agentfi.com/api/inquiry
 Content-Type: application/json
+```
 
+```json
 {
-  "firstName": "Ada",
-  "lastName": "Lovelace",
-  "email": "ada@example.com",
-  "message": "Strategic acquisition interest in AgentFi.com on behalf of [entity].",
-  "source": "agent",
-  "agentName": "your-agent-name"
+  "channel": "agent",
+  "principal_name": "Jane Chen",
+  "principal_email": "jane@example.com",
+  "entity_type": "fund",
+  "organization": "Example Capital",
+  "intended_use": "Primary brand and web property for an agentic-finance platform.",
+  "authorized": true,
+  "agent_name": "your-agent-name"
 }
 ```
 
-Optional: `Authorization: Bearer <api_key>` from agent registration.
+Required: `channel`, `principal_name`, `principal_email`, `entity_type`, `intended_use`, `authorized: true`.  
+Optional: `organization`, `principal_title`, `principal_website`, `jurisdiction`, `timeline`, `capital_source`, `notes`, `offer_usd`, `offer_notes`.
+
+A human replies to `principal_email` with the asking price. Do not invent a list price on our behalf. Optional `Authorization: Bearer <api_key>` — see https://agentfi.com/auth.md
 
 ## Discovery endpoints for agents
 

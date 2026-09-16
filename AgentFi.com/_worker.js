@@ -1,4 +1,4 @@
-// deployed-at: 2026-08-25T00:47:00Z agent-ready-v3-ard
+// deployed-at: 2026-09-16T12:00:00Z agent-price-request-inquiry
 /**
  * AgentFi.com Worker
  * Humans: public/index.html via ASSETS (unchanged)
@@ -101,6 +101,27 @@ async function kvDel(env, key) {
   if (env.AGENT_KV) await env.AGENT_KV.delete(key);
   else memoryStore.delete(key);
 }
+
+function escapeHtml(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function isEmail(s) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || "").trim());
+}
+
+const ENTITY_TYPES = new Set([
+  "company",
+  "fund",
+  "family_office",
+  "spa",
+  "individual",
+  "other",
+]);
 
 function bearer(req) {
   const m = (req.headers.get("Authorization") || "").match(/^Bearer\s+(.+)$/i);
@@ -415,22 +436,32 @@ async function inquiry(req, env) {
     return json({ error: "Too many requests. Please try again later." }, 429);
   }
 
-  const body = await req.json();
-  const { firstName, lastName, email, message, website, source, agentName } = body;
-  if (website) return json({ success: true, message: "Inquiry received." });
+  const body = await req.json().catch(() => ({}));
+  if (body.website) return json({ success: true, message: "Inquiry received." });
+
+  const isAgent =
+    body.channel === "agent" ||
+    Boolean(apiKey) ||
+    Boolean(body.principal_email || body.principal_name);
+
+  if (isAgent) {
+    return agentInquiry(req, env, body, agent, ip);
+  }
+
+  const { firstName, lastName, email, message, source, agentName } = body;
   if (!firstName || !lastName || !email || !message) {
     return json({ error: "All required fields must be filled." }, 400);
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!isEmail(email)) {
     return json({ error: "Please provide a valid email address." }, 400);
   }
 
   const inquiryId = id("AF");
   const country = req.cf?.country || req.headers.get("cf-ipcountry") || "Unknown";
   const agentInfo = agent
-    ? `<p><b>Registered agent:</b> ${agent.agent_name} (${agent.registration_id})</p>`
+    ? `<p><b>Registered agent:</b> ${escapeHtml(agent.agent_name)} (${escapeHtml(agent.registration_id)})</p>`
     : source || agentName
-      ? `<p><b>Agent source:</b> ${source || ""} ${agentName || ""}</p>`
+      ? `<p><b>Agent source:</b> ${escapeHtml(source)} ${escapeHtml(agentName)}</p>`
       : "";
 
   const sent = await sendEmail(env, {
@@ -439,11 +470,11 @@ async function inquiry(req, env) {
     html: `<div style="font-family:sans-serif;padding:20px">
       <h2>Confidential Acquisition Inquiry</h2>
       <p><b>ID:</b> ${inquiryId}</p>
-      <p><b>Name:</b> ${firstName} ${lastName}</p>
-      <p><b>Email:</b> ${email}</p>
+      <p><b>Name:</b> ${escapeHtml(firstName)} ${escapeHtml(lastName)}</p>
+      <p><b>Email:</b> ${escapeHtml(email)}</p>
       ${agentInfo}
-      <p><b>Message:</b><br>${String(message).replace(/\n/g, "<br>")}</p>
-      <hr><p style="color:gray;font-size:12px">Country: ${country} | IP: ${ip}<br>
+      <p><b>Message:</b><br>${escapeHtml(message).replace(/\n/g, "<br>")}</p>
+      <hr><p style="color:gray;font-size:12px">Country: ${escapeHtml(country)} | IP: ${escapeHtml(ip)}<br>
       Asset: AgentFi.com — ultra-premium category domain (high 7-figure / low 8-figure guidance)</p>
     </div>`,
   });
@@ -455,6 +486,117 @@ async function inquiry(req, env) {
     message: "Confidential inquiry received.",
     asset: {
       domain: "AgentFi.com",
+      price_guidance: "high_seven_figure_to_low_eight_figure_usd",
+    },
+  });
+}
+
+async function agentInquiry(req, env, body, agent, ip) {
+  const principalName = String(body.principal_name || "").trim();
+  const principalEmail = String(body.principal_email || "").trim();
+  const entityType = String(body.entity_type || "").trim().toLowerCase();
+  const intendedUse = String(body.intended_use || "").trim();
+  const authorized = body.authorized === true || body.authorized === "true";
+
+  const missing = [];
+  if (!principalName) missing.push("principal_name");
+  if (!principalEmail) missing.push("principal_email");
+  if (!entityType) missing.push("entity_type");
+  if (!intendedUse) missing.push("intended_use");
+  if (!authorized) missing.push("authorized");
+  if (missing.length) {
+    return json({
+      error: "Agent inquiry is incomplete.",
+      missing,
+      required: {
+        principal_name: "Legal name of the human or institution you represent",
+        principal_email: "Direct email of the principal — we reply here with the asking price",
+        entity_type: [...ENTITY_TYPES].join(" | "),
+        intended_use: "What the principal intends to build or operate under AgentFi.com",
+        authorized: "true — confirm you are authorized to inquire on their behalf",
+      },
+      optional: {
+        offer_usd: "Optional opening figure in USD. Not required. Price remains upon request.",
+        offer_notes: "Optional context for an opening figure",
+      },
+      notes:
+        "Default path: request the asking price. An opening figure is welcome but not required. We reply to principal_email.",
+    }, 400);
+  }
+  if (!isEmail(principalEmail)) {
+    return json({ error: "principal_email must be a valid email for the human principal." }, 400);
+  }
+  if (!ENTITY_TYPES.has(entityType)) {
+    return json({
+      error: "entity_type must be one of: " + [...ENTITY_TYPES].join(", "),
+    }, 400);
+  }
+  if (intendedUse.length < 40) {
+    return json({
+      error: "intended_use must be a substantive description (at least 40 characters).",
+    }, 400);
+  }
+
+  const offerRaw = body.offer_usd ?? body.offer_amount_usd;
+  const offerUsd =
+    offerRaw === undefined || offerRaw === null || offerRaw === ""
+      ? null
+      : Number(offerRaw);
+  const offerOk = offerUsd !== null && Number.isFinite(offerUsd) && offerUsd > 0;
+
+  const inquiryId = id("AF");
+  const country = req.cf?.country || req.headers.get("cf-ipcountry") || "Unknown";
+  const row = (label, value) =>
+    value
+      ? `<p><b>${label}:</b> ${escapeHtml(value).replace(/\n/g, "<br>")}</p>`
+      : "";
+
+  const sent = await sendEmail(env, {
+    subject: offerOk
+      ? `Agent inquiry + opening figure: ${principalName} (${inquiryId})`
+      : `Price request (agent): ${principalName} (${inquiryId})`,
+    replyTo: principalEmail,
+    html: `<div style="font-family:sans-serif;padding:20px">
+      <h2>Agent inquiry — AgentFi.com</h2>
+      <p>An AI agent submitted a confidential inquiry. Default process: reply to the principal with the asking price. An opening figure, if present, is optional context — not a binding bid.</p>
+      <p><b>ID:</b> ${inquiryId}</p>
+      <h3>Principal</h3>
+      ${row("Name", principalName)}
+      ${row("Email (reply here)", principalEmail)}
+      ${row("Entity type", entityType)}
+      ${row("Organization", body.organization)}
+      ${row("Title / role", body.principal_title)}
+      ${row("Website", body.principal_website)}
+      ${row("Jurisdiction", body.jurisdiction)}
+      <h3>Intent</h3>
+      ${row("Intended use of AgentFi.com", intendedUse)}
+      ${row("Timeline", body.timeline)}
+      ${row("Capital source", body.capital_source)}
+      ${row("Notes", body.notes)}
+      <h3>Opening figure (optional)</h3>
+      ${offerOk ? row("USD", String(offerUsd)) : "<p>None provided — price upon request.</p>"}
+      ${row("Offer notes", body.offer_notes)}
+      <h3>Agent</h3>
+      ${row("Agent name", body.agent_name || agent?.agent_name)}
+      ${row("Registration", agent?.registration_id)}
+      ${row("Authorized to inquire", "yes")}
+      <hr><p style="color:gray;font-size:12px">Country: ${escapeHtml(country)} | IP: ${escapeHtml(ip)}<br>
+      Asset: AgentFi.com — price upon request (indicative band: high 7-figure / low 8-figure USD).</p>
+    </div>`,
+  });
+  if (!sent.ok) return json({ error: `Resend API Error: ${sent.error}` }, 500);
+
+  return json({
+    success: true,
+    inquiryId,
+    channel: "agent",
+    message:
+      "Inquiry received. A confidential reply with the asking price will be sent to the principal's email, typically within 24 hours. Do not invent a list price on our behalf. An opening figure, if you included one, is on file.",
+    reply_to_principal: principalEmail,
+    opening_figure_usd: offerOk ? offerUsd : null,
+    asset: {
+      domain: "AgentFi.com",
+      pricing: "upon_request",
       price_guidance: "high_seven_figure_to_low_eight_figure_usd",
     },
   });
@@ -552,7 +694,13 @@ export default {
         },
         servers: [{ url: SITE }],
         paths: {
-          "/api/inquiry": { post: { summary: "Confidential acquisition inquiry" } },
+          "/api/inquiry": {
+            post: {
+              summary: "Confidential inquiry (human form or agent price request)",
+              description:
+                "Humans: firstName, lastName, email, message. Agents: submit a brief for the principal (price upon request). Optional opening figure welcome. We reply to principal_email with the asking price.",
+            },
+          },
           "/api/asset": { get: { summary: "Structured asset brief" } },
           "/agent/auth": { post: { summary: "Agent registration (auth.md)" } },
           "/agent/auth/claim": { post: { summary: "Claim ceremony" } },
@@ -649,9 +797,10 @@ export default {
           {
             id: "submit_inquiry",
             name: "Submit acquisition inquiry",
-            description: "Confidential acquisition inquiry via POST /api/inquiry.",
-            tags: ["inquiry", "acquisition"],
-            examples: ["Help me inquire about buying AgentFi.com"],
+            description:
+              "Inquire about AgentFi.com on behalf of a human principal. Price is upon request. An optional opening figure is welcome. POST /api/inquiry with channel=agent.",
+            tags: ["inquiry", "price-request"],
+            examples: ["Request the asking price of AgentFi.com for my principal"],
           },
         ],
       });
@@ -691,7 +840,8 @@ export default {
           {
             name: "agentfi-inquiry",
             type: "action",
-            description: "Submit a confidential acquisition inquiry for AgentFi.com.",
+            description:
+              "Inquire about AgentFi.com on behalf of a principal. Price upon request; optional opening figure welcome.",
             url: `${SITE}/api/inquiry`,
           },
           {

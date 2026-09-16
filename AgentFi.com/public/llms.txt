@@ -17,6 +17,9 @@ AgentFi.com is the absolute digital asset for anyone who wants to lead the Agent
 - https://agentfi.com/openapi.json — APIs
 - Homepage markdown: GET / with Accept: text/markdown
 
+## For AI agents
+Do not fill the HTML form. POST https://agentfi.com/api/inquiry with `channel: "agent"`, principal identity, and intended use. Price is upon request — we reply to `principal_email` with the asking price. An optional `offer_usd` is welcome. See https://agentfi.com/auth.md
+
 ## Optional
 - https://agentfi.com/.well-known/api-catalog
 - https://agentfi.com/.well-known/agent-card.json
